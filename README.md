@@ -1,130 +1,110 @@
-# NET-DHCP // Network Address Allocation and DHCP Lease Simulation System
+# Network Address Allocation and DHCP Lease Simulation System (Activity 2)
 
-An interactive, high-fidelity web application that simulates DHCP-based IP address allocation, Finite-State Machine (FSM) lease lifecycle management, regular expression address validation, live packet exchanges, address collisions (ARP probes & DHCPDECLINE), lease expiry/renewal, and pool exhaustion errors.
-
----
-
-## 🌟 Key Features
-
-1. **RFC 2131 Finite-State Machine (FSM) Visualizer**:
-   - Interactive, animated SVG state transition graph.
-   - States modeled: `INIT`, `SELECTING` (Discover), `REQUESTING` (Offer), `BOUND`, `RENEWING` (T1 50%), `REBINDING` (T2 87.5%), `RELEASED`, `EXPIRED`, and `DECLINED` (Conflict).
-   - Real-time active state halo pulse, RFC specification drawer, and transition crumb trail.
-
-2. **Strict Regular Expression Validation**:
-   - **IPv4 Format**: `^(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(?:\.(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3}$`
-   - **IEEE 802 MAC**: `^(?:[0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}$|^[0-9A-Fa-f]{4}\.[0-9A-Fa-f]{4}\.[0-9A-Fa-f]{4}$` (supports colon, hyphen, and Cisco dotted formats; detects multicast MACs).
-   - **Contiguous Netmasks**: Validates RFC 950 / CIDR contiguous subnet masks.
-   - **RFC 1123 Hostnames**: Strict label syntax validation.
-   - **Interactive Regex Lab**: Live testbench with token-by-token syntactic breakdown, match tester, and error diagnostics.
-
-3. **Message Exchange Sequence (Ladder) Diagram**:
-   - Live UML ladder diagram illustrating packet exchanges between Client, Network Switch, and DHCP Server(s).
-   - Color-coded protocol message badges (`DHCPDISCOVER`, `DHCPOFFER`, `DHCPREQUEST`, `DHCPACK`, `DHCPNAK`, `DHCPDECLINE`, `DHCPRELEASE`, `ARP PROBE`).
-   - One-click navigation to inspect any message in the Packet Inspector.
-
-4. **Deep Packet Inspector (RFC 2131 & RFC 2132)**:
-   - Full decoding of Ethernet, IP, and UDP layers.
-   - Fixed header fields: `op`, `htype`, `hlen`, `hops`, `xid`, `secs`, `flags`, `ciaddr`, `yiaddr`, `siaddr`, `giaddr`, `chaddr`.
-   - Variable Options decoder: Option 53 (Message Type), Option 54 (Server ID), Option 51 (Lease Time), Option 58 (T1), Option 59 (T2), Option 1 (Subnet Mask), Option 3 (Router), Option 6 (DNS), Option 12 (Hostname).
-
-5. **Address Conflict Simulation & Quarantine**:
-   - Simulated Gratuitous ARP / ARP probe collision.
-   - Client triggers `DHCPDECLINE` upon collision; Server locks that IP in quarantine and isolates it from dynamic pool allocation.
-
-6. **Interactive IP Address Pool Heatmap**:
-   - Visual grid of the entire address pool.
-   - Live state indicators: Available, Bound, Offered, Conflicted, and Static.
-   - Real-time pool utilization gauge.
-   - Administrative controls: Manual Conflict Injection, Quarantine Clearing.
-
-7. **Multi-Device Topology & Fault Injection**:
-   - Add/Remove custom devices (Laptops, Phones, Workstations, IoT Sensors).
-   - Live lease countdown timers with visual T1 (50%) and T2 (87.5%) threshold markers.
-   - Rogue DHCP Server emulation: race condition between authorized server and rogue server on `10.0.0.1`.
-   - Pool exhaustion and DHCPNAK generation.
+**Course:** CS3352 - Computer Networks Laboratory  
+**Activity:** Activity 2  
+**Student Name:** Madhuvarsh C  
+**GitHub:** [https://github.com/Madhu74188/dhcp-lease-simulation-system](https://github.com/Madhu74188/dhcp-lease-simulation-system)  
+**Live Application:** [https://madhu74188.github.io/dhcp-lease-simulation-system/](https://madhu74188.github.io/dhcp-lease-simulation-system/)
 
 ---
 
-## 🚀 How to Run
+## 📌 Project Overview
+This project simulates dynamic network address allocation and the DHCP lease lifecycle using a full **MERN Stack** (MongoDB, Express.js, React.js, Node.js) paired with formal **Automata Theory** (Deterministic Finite Automaton / FSM) and strict **Regular Expression Form Validation**.
 
-### Method 1: Instant Browser Launch (Zero Installation)
-Double-click **`open_browser.bat`** or double-click **`standalone.html`** in Windows Explorer. It opens instantly in any web browser without needing a server or Node.js.
+The system fully covers RFC 2131 and RFC 2132 requirements:
+1. **Dynamic IP Address Allocation (DORA)**: DHCPDISCOVER, DHCPOFFER, DHCPREQUEST, DHCPACK.
+2. **Formal Automata (FSM / DFA)**: State Transition Diagram and Transition Table representing the lease lifecycle from `INIT` through `BOUND`, `RENEWING`, and `RELEASED`.
+3. **Form & Address Validation**: Regular expressions validating IPv4 format (0-255 octets) and IEEE 802 MAC addresses (colon, hyphen, and dotted formats).
+4. **Message Exchange Sequence**: Live ladder tracking packet directions and timestamps.
+5. **Address Collision & Conflict Quarantine**: Detection via simulated ARP probe, triggering `DHCPDECLINE` and isolating conflicting addresses.
+6. **Lease Expiration & Renewal**: Automatic T1 (50%) renewal and T2 (87.5%) rebinding countdowns.
+7. **Pool Exhaustion Handling**: Detection of zero available addresses and emission of `DHCPNAK`.
 
-### Method 2: Launch via Local Node.js Server
-Double-click **`start.bat`** or run:
+---
+
+## 📐 Automata Design: State Transition Diagram & Table
+
+### 1. Formal 5-Tuple Definition: $M = (Q, \Sigma, \delta, q_0, F)$
+- **$Q$ (States):** `{INIT, SELECTING (DISCOVER), REQUESTING (OFFER), BOUND, RENEWING, RELEASED, EXPIRED, DECLINED}`
+- **$\Sigma$ (Alphabet / Inputs):** `{SEND_DISCOVER, RECV_OFFER, SEND_REQUEST, RECV_ACK, TIMEOUT_T1, TIMEOUT_LEASE, USER_RELEASE, ARP_COLLISION, RECV_NAK}`
+- **$q_0$ (Initial State):** `INIT`
+- **$F$ (Accepting / Stable States):** `{BOUND, RELEASED}`
+- **$\delta$ (Transition Function):** Defined by the table below.
+
+### 2. State Transition Table
+
+| Current State | Input Event | Next State | Network Action / Protocol Packet |
+| :--- | :--- | :--- | :--- |
+| **INIT** | `SEND_DISCOVER` | **SELECTING (DISCOVER)** | Broadcasts `DHCPDISCOVER` on `255.255.255.255:67` |
+| **SELECTING (DISCOVER)** | `RECV_OFFER` | **REQUESTING (OFFER)** | Receives `DHCPOFFER` from Server with proposed IP |
+| **SELECTING (DISCOVER)** | `TIMEOUT` | **INIT** | Retries exponential backoff |
+| **REQUESTING (OFFER)** | `SEND_REQUEST` | **REQUESTING (OFFER)** | Broadcasts `DHCPREQUEST` requesting the offered IP |
+| **REQUESTING (OFFER)** | `RECV_ACK` | **BOUND** | Performs ARP probe; IP clean; starts lease timer |
+| **REQUESTING (OFFER)** | `ARP_COLLISION` | **DECLINED** | Sends `DHCPDECLINE`; locks IP in Quarantine |
+| **REQUESTING (OFFER)** | `RECV_NAK` | **INIT** | Pool empty or invalid lease; resets to INIT |
+| **BOUND** | `TIMEOUT_T1` (50%) | **RENEWING** | Unicasts `DHCPREQUEST` to lease server |
+| **BOUND** | `USER_RELEASE` | **RELEASED** | Sends `DHCPRELEASE`; IP returned to Available Pool |
+| **BOUND** | `TIMEOUT_LEASE` | **EXPIRED** | Lease countdown reaches 0; IP reclaimed |
+| **RENEWING** | `RECV_ACK` | **BOUND** | Resets lease countdown timer to 100% |
+| **RENEWING** | `TIMEOUT_LEASE` | **EXPIRED** | Reclaims IP; client transitions back to INIT |
+| **DECLINED** | `AUTO_RETRY` | **INIT** | Restarts DORA handshake for a clean address |
+| **RELEASED** | `USER_CONNECT` | **INIT** | Device re-enters initial boot state |
+
+---
+
+## 💻 Tech Stack & Architecture
+
+### Backend: Node.js, Express.js & MongoDB
+- **`server/server.js`**: Express application connecting to MongoDB via Mongoose.
+- **`server/models/`**:
+  - `Device.js`: MAC address, hostname, device type, current IP, FSM state.
+  - `Lease.js`: Allocated IP, MAC, lease start, expiration time, state.
+  - `IpPool.js`: IP block, subnet, gateway, status (Available, Leased, Conflicted).
+  - `PacketLog.js`: Protocol message history (op, xid, ciaddr, yiaddr, options).
+- **`server/controllers/`**:
+  - `dhcpController.js`: Full DORA allocation engine, conflict quarantine, lease management.
+  - `automataController.js`: DFA transition matrix and state validation API.
+- **`server/routes/dhcpRoutes.js`**: RESTful endpoints for client and server actions.
+
+### Frontend: React.js
+- **`client/src/App.jsx`**: Master dashboard coordinating state across components.
+- **`client/src/components/DeviceControl.jsx`**: Device selector, lease timers, and DORA action triggers.
+- **`client/src/components/FsmDiagram.jsx`**: Visual interactive State Transition Diagram.
+- **`client/src/components/TransitionTable.jsx`**: Automata transition table with live active row highlighting.
+- **`client/src/components/RegexValidatorCard.jsx`**: User input form validation for IPv4 and MAC with visual regex feedback.
+- **`client/src/components/IpPoolGrid.jsx`**: Dynamic IP allocation matrix showing Leased, Available, and Conflicted states.
+- **`client/src/components/MessageFeed.jsx`**: Chronological packet exchange log.
+
+---
+
+## 🚀 How to Run the Project
+
+### Option 1: Instant Browser Launch (Zero Installation)
+Double-click **`open_browser.bat`** or open **`standalone.html`** directly in any web browser.
+
+### Option 2: Full MERN Stack
+1. Start MongoDB (`mongod` or local MongoDB service).
+2. Install dependencies:
+   ```bash
+   npm run install-all
+   ```
+3. Run Backend Server:
+   ```bash
+   npm run server
+   ```
+4. Run Frontend React Client:
+   ```bash
+   npm run client
+   ```
+
+### Option 3: Standard Node Static Server
 ```bash
 npm start
 ```
-Then navigate to `http://localhost:3000` in your browser.
+Then visit `http://localhost:3000`.
 
-### Method 3: Run the Automated Unit Test Suite
-To verify the regular expressions, FSM state transitions, and pool allocations:
+### Option 4: Run Automated Tests
 ```bash
 npm test
 ```
-
----
-
-## 📁 Project Structure
-
-```
-dhcp-lease-simulation-system/
-├── index.html                 # Main web application entry point
-├── standalone.html            # Standalone zero-dependency bundle
-├── server.js                  # Lightweight Node.js static HTTP server
-├── package.json               # NPM scripts and configuration
-├── start.bat                  # Windows batch launcher (Server + Browser)
-├── open_browser.bat           # Windows direct browser launcher
-├── build-standalone.js        # Build script for standalone bundle
-├── README.md                  # Comprehensive documentation
-├── src/
-│   ├── css/
-│   │   └── styles.css         # Modern NOC & Cyber-Modern UI stylesheet
-│   └── js/
-│       ├── regex-validator.js # IPv4, MAC, Mask, CIDR regex validators & explanations
-│       ├── packet.js          # RFC 2131 DHCP packet data structures & factories
-│       ├── fsm.js             # Client lease Finite-State Machine implementation
-│       ├── dhcp-server.js     # DHCP server, address pool, leases & quarantine engine
-│       ├── client.js          # Client device model with FSM & timer monitors
-│       ├── simulation.js      # Simulation coordinator & scenario orchestrator
-│       ├── app.js             # Application bootstrap
-│       └── ui/
-│           ├── fsm-visualizer.js    # Interactive SVG FSM diagram
-│           ├── sequence-diagram.js  # Message exchange ladder diagram
-│           ├── packet-inspector.js  # Deep RFC 2131 packet header decoder
-│           ├── ip-matrix.js         # IP pool heatmap and utilization meter
-│           ├── regex-lab.js         # Interactive regex tester & educational lab
-│           └── ui-controller.js     # Master UI binding coordinator
-└── test/
-    └── test-fsm-regex.js      # 19 automated tests for regex and FSM logic
-```
-
----
-
-## 🔬 Protocol & FSM Reference
-
-### The 4-Step DORA Handshake
-```
-Client                          Network Switch                     DHCP Server
-  │                                    │                                 │
-  ├────── DHCPDISCOVER (Broadcast) ───►│──────── DHCPDISCOVER ──────────►│
-  │                                    │                                 │
-  │◄───── DHCPOFFER (Unicast/Bcast) ───│◄─────── DHCPOFFER ──────────────┤
-  │                                    │                                 │
-  ├────── DHCPREQUEST (Broadcast) ────►│──────── DHCPREQUEST ───────────►│
-  │                                    │                                 │
-  │◄───── DHCPACK (Unicast/Bcast) ─────│◄─────── DHCPACK ────────────────┤
-  │                                    │                                 │
-[BOUND]                                                            [LEASE COMMITTED]
-```
-
-### Lease Timers
-- **T1 (Renewal Timer)**: Set to 50% of lease duration (`0.50 * lease`). Client unicasts `DHCPREQUEST` directly to the leasing server.
-- **T2 (Rebinding Timer)**: Set to 87.5% of lease duration (`0.875 * lease`). If T1 renewal was unacknowledged, client broadcasts `DHCPREQUEST` to any available server.
-- **T3 (Lease Expiry)**: Set to 100% of lease duration. If no ACK is received by this time, client relinquishes the IP, transitions to `INIT`, and server reclaims the address.
-
----
-
-## 📜 License
-MIT License. Built for Computer Networks Education and Protocol Engineering.
+All 19 unit tests verify IPv4 Regex, MAC Regex, Subnet Regex, FSM transitions, and IP pool quarantine.
