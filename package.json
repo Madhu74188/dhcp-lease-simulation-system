@@ -1,0 +1,22 @@
+{
+  "name": "dhcp-lease-simulation-system",
+  "version": "1.0.0",
+  "description": "Interactive Web Application simulating DHCP-based IP address allocation, FSM lease states, regex validation, and packet exchange visualization",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/test-fsm-regex.js"
+  },
+  "keywords": [
+    "dhcp",
+    "fsm",
+    "state-machine",
+    "rfc2131",
+    "ip-allocation",
+    "lease-simulation",
+    "regex-validator",
+    "network-simulation"
+  ],
+  "author": "Antigravity Network Systems",
+  "license": "MIT"
+}

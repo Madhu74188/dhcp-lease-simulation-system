@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DHCP Lease Simulator // Simple & Interactive</title>
+    <link rel="stylesheet" href="src/css/styles.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌐</text></svg>">
+</head>
+<body>
+
+    <!-- Simplified Top Navigation -->
+    <header class="top-nav">
+        <div class="nav-brand">
+            <span class="brand-badge">DHCP</span>
+            <div class="brand-text">
+                <h1>Network Address Allocation & DHCP Lease Simulator</h1>
+                <p>Interactive FSM, DORA Handshake, Conflicts, Lease Expiry & Regex</p>
+            </div>
+        </div>
+
+        <!-- 1-Click Quick Scenarios -->
+        <div class="quick-scenarios">
+            <span class="scenario-title">1-Click Tests:</span>
+            <button class="btn-scenario active" data-scenario="dora-happy-path">🟢 1. Normal DORA</button>
+            <button class="btn-scenario" data-scenario="address-conflict">🔴 2. IP Conflict (Decline)</button>
+            <button class="btn-scenario" data-scenario="lease-expiry-reclaim">⏱️ 3. Lease Expiry</button>
+            <button class="btn-scenario" data-scenario="pool-exhaustion">⚠️ 4. Pool Full (Error)</button>
+        </div>
+
+        <!-- Controls -->
+        <div class="nav-controls">
+            <span class="clock-pill" id="sim-clock">Clock: 00:00</span>
+            <button class="btn-action btn-play" id="btn-play-toggle">⏸ Pause</button>
+            <select class="btn-action" id="select-sim-speed" style="background:#0f172a; cursor:pointer;">
+                <option value="1" selected>Speed: 1x</option>
+                <option value="2">Speed: 2x</option>
+                <option value="5">Speed: 5x</option>
+            </select>
+            <button class="btn-action" id="btn-sim-reset">↺ Reset</button>
+        </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <main class="dashboard-container">
+
+        <!-- Teacher Presentation Assistant Banner (Tells you what to say to Mam!) -->
+        <div class="presentation-guide-card">
+            <div class="guide-icon">💬</div>
+            <div class="guide-content">
+                <div class="guide-title" id="guide-title">EXPLANATION FOR MAM:</div>
+                <div class="guide-text" id="guide-text">"Mam, this web app simulates DHCP IP address allocation. Devices connect, go through the 4-step DORA handshake, follow an FSM state machine, and validate addresses with Regular Expressions."</div>
+            </div>
+        </div>
+
+        <!-- Allocation Error Banner (Pool Exhaustion Alert) -->
+        <div class="error-alert-banner" id="error-banner">
+            <span>⚠️ <strong id="error-msg">Allocation Error: Address Pool Exhausted! No available IPs.</strong></span>
+            <span style="font-size: 11px; opacity: 0.8;">Server cannot allocate an IP (DHCPNAK)</span>
+        </div>
+
+        <!-- Top Half: Device Controls & State Machine -->
+        <div class="dashboard-row">
+            
+            <!-- Card 1: Client Devices & DHCP Allocation -->
+            <div class="clean-card">
+                <div class="card-top">
+                    <span class="card-title">💻 1. Client Devices & DHCP Allocation</span>
+                    <span style="font-size: 11px; color: var(--text-muted);">Select device & click an action</span>
+                </div>
+                <div class="card-body">
+                    <!-- Quick Device Selector Tabs -->
+                    <div class="device-select-bar" id="device-tabs-container">
+                        <!-- Rendered dynamically -->
+                    </div>
+
+                    <!-- Active Device Status Box -->
+                    <div class="device-status-box">
+                        <div class="status-main-info">
+                            <div class="device-title-area">
+                                <h3 id="dev-name">Laptop-Alpha</h3>
+                                <div class="mac-badge">
+                                    <span>MAC: <code id="dev-mac">00:1E:67:98:2A:1B</code></span>
+                                    <span class="regex-tag-ok">✓ Regex Valid</span>
+                                </div>
+                            </div>
+                            <div class="ip-display-pill unassigned" id="dev-ip">
+                                0.0.0.0 (Unassigned)
+                            </div>
+                        </div>
+
+                        <!-- Lease Expiry Progress Meter -->
+                        <div class="lease-meter-container">
+                            <div class="lease-meter-label">
+                                <span>Lease Countdown (T1 = 50% Renewal Threshold)</span>
+                                <span id="dev-lease-label">No active lease</span>
+                            </div>
+                            <div class="lease-track">
+                                <div class="lease-fill" id="dev-lease-fill" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4 Big Action Buttons -->
+                    <div class="action-buttons-grid">
+                        <button class="btn-dora" id="btn-dora-action">▶ Get IP (DORA)</button>
+                        <button class="btn-secondary" id="btn-renew-action">⟳ Renew Lease</button>
+                        <button class="btn-secondary" id="btn-release-action">⏏ Release IP</button>
+                        <button class="btn-warn" id="btn-conflict-action">⚡ Test Conflict</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Finite-State Machine (FSM) Lifecycle -->
+            <div class="clean-card">
+                <div class="card-top">
+                    <span class="card-title">🔄 2. Finite-State Machine (FSM) Lifecycle</span>
+                    <span style="font-size: 11px; color: var(--text-muted);">RFC 2131 Lease States</span>
+                </div>
+                <div class="card-body">
+                    <div class="fsm-pipeline-container">
+                        
+                        <!-- Current State Banner -->
+                        <div class="fsm-banner">
+                            <div>
+                                <span style="font-size: 10px; color: var(--text-muted); display: block; font-weight:700;">CURRENT FSM STATE:</span>
+                                <span class="fsm-state-badge" id="fsm-badge" style="background:#64748b; color:#fff;">INIT</span>
+                            </div>
+                            <div style="text-align: right; max-width: 65%;">
+                                <span style="font-size: 10px; color: var(--text-muted); display: block; font-weight:700;">STATE EXPLANATION:</span>
+                                <p class="fsm-explain-text" id="fsm-explain">Device interface unconfigured (IP: 0.0.0.0). Ready for DHCP discovery.</p>
+                            </div>
+                        </div>
+
+                        <!-- Sequential State Nodes -->
+                        <div class="fsm-nodes-track">
+                            <div class="fsm-step-node is-active" id="step-init">
+                                <span class="node-num">STEP 0</span>
+                                <span class="node-name">INIT</span>
+                            </div>
+                            <div class="fsm-step-node" id="step-discover">
+                                <span class="node-num">STEP 1</span>
+                                <span class="node-name">DISCOVER</span>
+                            </div>
+                            <div class="fsm-step-node" id="step-offer">
+                                <span class="node-num">STEP 2</span>
+                                <span class="node-name">OFFER</span>
+                            </div>
+                            <div class="fsm-step-node" id="step-bound">
+                                <span class="node-num">STEP 3</span>
+                                <span class="node-name">BOUND</span>
+                            </div>
+                            <div class="fsm-step-node" id="step-renewing">
+                                <span class="node-num">STEP 4</span>
+                                <span class="node-name">RENEWING</span>
+                            </div>
+                            <div class="fsm-step-node" id="step-released">
+                                <span class="node-num">FINAL</span>
+                                <span class="node-name">RELEASED</span>
+                            </div>
+                        </div>
+
+                        <div style="font-size: 12px; color: var(--text-dim); text-align: center;">
+                            Lifecycle: <code>INIT</code> ➔ <code>DISCOVER</code> ➔ <code>OFFER</code> ➔ <code>REQUEST</code> ➔ <code>BOUND</code> ➔ <code>RENEWING</code> ➔ <code>RELEASED</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Bottom Half: Message Sequence, IP Pool Heatmap & Regex Tester -->
+        <div class="dashboard-row" style="grid-template-columns: 1.2fr 0.9fr 0.9fr;">
+            
+            <!-- Card 3: Live DORA Message Sequence -->
+            <div class="clean-card">
+                <div class="card-top">
+                    <span class="card-title">📨 3. Message Exchanges (DORA)</span>
+                    <span style="font-size: 11px; color: var(--text-muted);">Live packet history</span>
+                </div>
+                <div class="card-body">
+                    <div class="seq-list-container" id="seq-feed-container">
+                        <div class="empty-hint">No messages yet. Click "Get IP (DORA)" to begin.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 4: IP Address Pool & Conflicts -->
+            <div class="clean-card">
+                <div class="card-top">
+                    <span class="card-title">▦ 4. IP Pool & Conflicts</span>
+                    <span style="font-size: 11px; color: var(--text-muted);" id="pool-counter">0 Leased / 20 Available</span>
+                </div>
+                <div class="card-body">
+                    <div class="pool-heatmap-grid" id="pool-grid-container">
+                        <!-- Rendered dynamically -->
+                    </div>
+                    <div style="display: flex; gap: 12px; font-size: 11px; color: var(--text-muted); justify-content: center; margin-top: 4px;">
+                        <span>🟢 <strong style="color:#4ade80;">Green:</strong> Bound</span>
+                        <span>⚪ <strong style="color:#94a3b8;">Grey:</strong> Available</span>
+                        <span>🔴 <strong style="color:#f87171;">Red:</strong> Conflict</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 5: Regular Expression Tester -->
+            <div class="clean-card">
+                <div class="card-top">
+                    <span class="card-title">🔍 5. Regex Address Validator</span>
+                    <span style="font-size: 11px; color: var(--color-blue); font-weight: 600;">⚡ Auto-Syncs with Allocated IP</span>
+                </div>
+                <div class="card-body">
+                    <div class="regex-box">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <label style="font-size: 11px; font-weight: 600; color: var(--text-muted);">Current Address Under Test:</label>
+                        </div>
+                        <div class="regex-input-row">
+                            <input type="text" class="clean-input" id="regex-quick-input" value="192.168.1.100" placeholder="e.g. 192.168.1.1 or 00:1A:2B:3C:4D:5E">
+                        </div>
+
+                        <!-- Quick Test Shortcuts -->
+                        <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px;">
+                            <button class="btn-scenario" id="btn-regex-sync-ip" style="padding: 3px 8px; font-size: 10px;">📌 Sync Device IP</button>
+                            <button class="btn-scenario" id="btn-regex-sync-mac" style="padding: 3px 8px; font-size: 10px;">🏷️ Sync Device MAC</button>
+                            <button class="btn-scenario" id="btn-regex-bad-ip" style="padding: 3px 8px; font-size: 10px; color:#f87171;">✗ Bad IP (300)</button>
+                            <button class="btn-scenario" id="btn-regex-bad-mac" style="padding: 3px 8px; font-size: 10px; color:#f87171;">✗ Bad MAC</button>
+                        </div>
+
+                        <div class="regex-result-pill res-valid" id="regex-quick-result">✓ VALID IPv4 ADDRESS</div>
+                        <p class="regex-info-note" id="regex-quick-note">
+                            Regex check passed: 4 decimal octets (0-255).
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Application Script Loading -->
+    <script src="src/js/regex-validator.js"></script>
+    <script src="src/js/packet.js"></script>
+    <script src="src/js/fsm.js"></script>
+    <script src="src/js/dhcp-server.js"></script>
+    <script src="src/js/client.js"></script>
+    <script src="src/js/simulation.js"></script>
+    <script src="src/js/ui/simple-ui.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            window.app = new SimpleUI();
+            window.app.init();
+        });
+    </script>
+</body>
+</html>

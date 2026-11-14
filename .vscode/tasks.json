@@ -1,0 +1,32 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start DHCP Simulator Server",
+      "type": "shell",
+      "command": "node server.js",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Run Automated Tests",
+      "type": "shell",
+      "command": "node test/test-fsm-regex.js",
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Open in Default Browser",
+      "type": "shell",
+      "command": "cmd /c start open_browser.bat",
+      "problemMatcher": []
+    }
+  ]
+}

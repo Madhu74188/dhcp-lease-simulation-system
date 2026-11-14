@@ -1,0 +1,4103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DHCP Lease Simulator // Simple & Interactive</title>
+    <style>
+/**
+ * Network Address Allocation and DHCP Lease Simulation System
+ * Simplified, Ultra-Clean & User-Friendly UI Stylesheet
+ * Includes Teacher Presentation Helper Banner & Visual Step Indicators
+ */
+
+:root {
+    --bg-main: #0b1120;
+    --bg-card: #151f32;
+    --bg-inner: #0b1120;
+    --border-color: #22324e;
+    --border-active: #38bdf8;
+
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --text-dim: #64748b;
+
+    --color-blue: #38bdf8;
+    --color-green: #22c55e;
+    --color-yellow: #eab308;
+    --color-purple: #a855f7;
+    --color-red: #ef4444;
+    --color-orange: #f97316;
+    --color-slate: #64748b;
+
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.4;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.top-nav {
+    background-color: #070d18;
+    border-bottom: 1px solid var(--border-color);
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.brand-badge {
+    background: linear-gradient(135deg, #0284c7, #38bdf8);
+    color: #fff;
+    font-weight: 800;
+    font-size: 14px;
+    padding: 6px 12px;
+    border-radius: var(--radius-md);
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(56, 189, 248, 0.3);
+}
+
+.brand-text h1 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.brand-text p {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.quick-scenarios {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.scenario-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-right: 4px;
+}
+
+.btn-scenario {
+    background: #151f32;
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btn-scenario:hover {
+    background: #1e293b;
+    border-color: var(--color-blue);
+    transform: translateY(-1px);
+}
+
+.btn-scenario.active {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: var(--color-blue);
+    color: var(--color-blue);
+}
+
+.nav-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.clock-pill {
+    background: #030712;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-family: monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-blue);
+}
+
+.btn-action {
+    background: #1e293b;
+    color: #fff;
+    border: 1px solid var(--border-color);
+    padding: 6px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.btn-action:hover {
+    background: #334155;
+}
+
+.btn-play {
+    background: #0284c7;
+    border-color: #38bdf8;
+}
+.btn-play:hover {
+    background: #0369a1;
+}
+
+/* Presentation Guide Banner */
+.presentation-guide-card {
+    background: linear-gradient(135deg, rgba(2, 132, 199, 0.15), rgba(16, 185, 129, 0.1));
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    border-radius: var(--radius-md);
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.guide-icon {
+    font-size: 24px;
+    background: rgba(56, 189, 248, 0.2);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.guide-content {
+    flex: 1;
+}
+
+.guide-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: 800;
+    color: var(--color-blue);
+    letter-spacing: 0.8px;
+    margin-bottom: 2px;
+}
+
+.guide-text {
+    font-size: 13px;
+    font-weight: 500;
+    color: #f1f5f9;
+}
+
+/* Allocation Error Alert Banner */
+.error-alert-banner {
+    display: none;
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid var(--color-red);
+    color: #fca5a5;
+    padding: 10px 16px;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 600;
+    align-items: center;
+    justify-content: space-between;
+    animation: alertPulse 1.5s infinite;
+}
+
+.error-alert-banner.show {
+    display: flex;
+}
+
+@keyframes alertPulse {
+    0%, 100% { border-color: var(--color-red); }
+    50% { border-color: #f87171; box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
+}
+
+/* Dashboard Main Grid */
+.dashboard-container {
+    flex: 1;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-width: 1440px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.dashboard-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+@media (max-width: 1050px) {
+    .dashboard-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Card Styling */
+.clean-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.card-top {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.card-title {
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.card-body {
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Device Selector Bar */
+.device-select-bar {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+}
+
+.device-tab {
+    background: #0b1120;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 7px 12px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+}
+
+.device-tab:hover {
+    border-color: #64748b;
+    color: #fff;
+}
+
+.device-tab.active {
+    background: rgba(56, 189, 248, 0.12);
+    border-color: var(--color-blue);
+    color: #fff;
+}
+
+.device-tab-status {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-slate);
+}
+.device-tab.active .device-tab-status.bound {
+    background: var(--color-green);
+    box-shadow: 0 0 6px var(--color-green);
+}
+
+/* Device Status Box */
+.device-status-box {
+    background: #0b1120;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.status-main-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.device-title-area h3 {
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.mac-badge {
+    font-family: monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.regex-tag-ok {
+    color: var(--color-green);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.ip-display-pill {
+    background: #151f32;
+    border: 1px solid #334155;
+    border-radius: var(--radius-md);
+    padding: 6px 14px;
+    font-family: monospace;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--color-green);
+    text-align: right;
+}
+
+.ip-display-pill.unassigned {
+    color: var(--text-dim);
+}
+
+.lease-meter-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.lease-meter-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.lease-track {
+    height: 8px;
+    background: #1e293b;
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+}
+
+.lease-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-green), var(--color-blue));
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.lease-fill.renewing {
+    background: linear-gradient(90deg, var(--color-purple), #c084fc);
+}
+
+.lease-fill.rebinding {
+    background: linear-gradient(90deg, var(--color-red), #f87171);
+}
+
+/* Device Action Buttons */
+.action-buttons-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 8px;
+}
+
+.btn-dora {
+    background: #0284c7;
+    color: #fff;
+    border: none;
+    padding: 9px 12px;
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(2, 132, 199, 0.4);
+    transition: all 0.15s ease;
+}
+.btn-dora:hover {
+    background: #0369a1;
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: #0b1120;
+    color: #f1f5f9;
+    border: 1px solid var(--border-color);
+    padding: 9px 12px;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.btn-secondary:hover {
+    background: #1e293b;
+    border-color: #64748b;
+}
+
+.btn-warn {
+    background: rgba(239, 68, 68, 0.12);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    padding: 9px 12px;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.btn-warn:hover {
+    background: var(--color-red);
+    color: #fff;
+}
+
+/* FSM Visualizer Pipeline */
+.fsm-pipeline-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.fsm-banner {
+    background: #0b1120;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.fsm-state-badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    letter-spacing: 0.5px;
+}
+
+.fsm-explain-text {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.fsm-nodes-track {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    background: #0b1120;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 8px;
+}
+
+@media (max-width: 650px) {
+    .fsm-nodes-track {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.fsm-step-node {
+    background: #151f32;
+    border: 1px solid #22324e;
+    border-radius: var(--radius-sm);
+    padding: 6px 2px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    transition: all 0.2s ease;
+}
+
+.fsm-step-node .node-num {
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--text-dim);
+}
+
+.fsm-step-node .node-name {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+}
+
+.fsm-step-node.is-active {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: var(--color-blue);
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+}
+
+.fsm-step-node.is-active .node-name {
+    color: #fff;
+}
+
+.fsm-step-node.is-bound {
+    background: rgba(34, 197, 94, 0.15);
+    border-color: var(--color-green);
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+}
+.fsm-step-node.is-bound .node-name {
+    color: var(--color-green);
+}
+
+.fsm-step-node.is-conflict {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: var(--color-red);
+}
+.fsm-step-node.is-conflict .node-name {
+    color: var(--color-red);
+}
+
+/* Sequence Diagram List */
+.seq-list-container {
+    max-height: 220px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-right: 4px;
+}
+
+.seq-item {
+    background: #0b1120;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+    gap: 8px;
+}
+
+.seq-item-badge {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.seq-badge-discover { background: #0284c7; color: #fff; }
+.seq-badge-offer    { background: #10b981; color: #fff; }
+.seq-badge-request  { background: #f59e0b; color: #000; }
+.seq-badge-ack      { background: #059669; color: #fff; }
+.seq-badge-nak      { background: #dc2626; color: #fff; }
+.seq-badge-decline  { background: #a855f7; color: #fff; }
+.seq-badge-release  { background: #64748b; color: #fff; }
+
+.seq-item-desc {
+    flex: 1;
+    color: #e2e8f0;
+}
+
+.seq-item-time {
+    font-family: monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+}
+
+/* IP Matrix Minimal */
+.pool-heatmap-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(42px, 1fr));
+    gap: 6px;
+    max-height: 160px;
+    overflow-y: auto;
+    padding: 4px;
+    background: #0b1120;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+}
+
+.pool-dot {
+    background: #151f32;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 5px 2px;
+    text-align: center;
+    font-family: monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+}
+
+.pool-dot.active {
+    background: rgba(34, 197, 94, 0.2);
+    border-color: var(--color-green);
+    color: #4ade80;
+}
+
+.pool-dot.conflict {
+    background: rgba(239, 68, 68, 0.25);
+    border-color: var(--color-red);
+    color: #f87171;
+}
+
+/* Regex Quick Lab */
+.regex-box {
+    background: #0b1120;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.clean-input {
+    width: 100%;
+    background: #030712;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 7px 10px;
+    font-family: monospace;
+    font-size: 12px;
+    color: #fff;
+    outline: none;
+}
+
+.clean-input:focus {
+    border-color: var(--color-blue);
+}
+
+.regex-result-pill {
+    padding: 5px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.res-valid {
+    background: rgba(34, 197, 94, 0.15);
+    border: 1px solid var(--color-green);
+    color: #4ade80;
+}
+
+.res-invalid {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid var(--color-red);
+    color: #f87171;
+}
+
+.regex-info-note {
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.3;
+}
+
+.empty-hint {
+    padding: 24px;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 12px;
+}
+
+</style>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌐</text></svg>">
+</head>
+<body>
+
+    <!-- Simplified Top Navigation -->
+    <header class="top-nav">
+        <div class="nav-brand">
+            <span class="brand-badge">DHCP</span>
+            <div class="brand-text">
+                <h1>Network Address Allocation & DHCP Lease Simulator</h1>
+                <p>Interactive FSM, DORA Handshake, Conflicts, Lease Expiry & Regex</p>
+            </div>
+        </div>
+
+        <!-- 1-Click Quick Scenarios -->
+        <div class="quick-scenarios">
+            <span class="scenario-title">1-Click Tests:</span>
+            <button class="btn-scenario active" data-scenario="dora-happy-path">🟢 1. Normal DORA</button>
+            <button class="btn-scenario" data-scenario="address-conflict">🔴 2. IP Conflict (Decline)</button>
+            <button class="btn-scenario" data-scenario="lease-expiry-reclaim">⏱️ 3. Lease Expiry</button>
+            <button class="btn-scenario" data-scenario="pool-exhaustion">⚠️ 4. Pool Full (Error)</button>
+        </div>
+
+        <!-- Controls -->
+        <div class="nav-controls">
+            <span class="clock-pill" id="sim-clock">Clock: 00:00</span>
+            <button class="btn-action btn-play" id="btn-play-toggle">⏸ Pause</button>
+            <select class="btn-action" id="select-sim-speed" style="background:#0f172a; cursor:pointer;">
+                <option value="1" selected>Speed: 1x</option>
+                <option value="2">Speed: 2x</option>
+                <option value="5">Speed: 5x</option>
+            </select>
+            <button class="btn-action" id="btn-sim-reset">↺ Reset</button>
+        </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <main class="dashboard-container">
+
+        <!-- Teacher Presentation Assistant Banner (Tells you what to say to Mam!) -->
+        <div class="presentation-guide-card">
+            <div class="guide-icon">💬</div>
+            <div class="guide-content">
+                <div class="guide-title" id="guide-title">EXPLANATION FOR MAM:</div>
+                <div class="guide-text" id="guide-text">"Mam, this web app simulates DHCP IP address allocation. Devices connect, go through the 4-step DORA handshake, follow an FSM state machine, and validate addresses with Regular Expressions."</div>
+            </div>
+        </div>
+
+        <!-- Allocation Error Banner (Pool Exhaustion Alert) -->
+        <div class="error-alert-banner" id="error-banner">
+            <span>⚠️ <strong id="error-msg">Allocation Error: Address Pool Exhausted! No available IPs.</strong></span>
+            <span style="font-size: 11px; opacity: 0.8;">Server cannot allocate an IP (DHCPNAK)</span>
+        </div>
+
+        <!-- Top Half: Device Controls & State Machine -->
+        <div class="dashboard-row">
+            
+            <!-- Card 1: Client Devices & DHCP Allocation -->
+            <div class="clean-card">
+                <div class="card-top">
+                    <span class="card-title">💻 1. Client Devices & DHCP Allocation</span>
+                    <span style="font-size: 11px; color: var(--text-muted);">Select device & click an action</span>
+                </div>
+                <div class="card-body">
+                    <!-- Quick Device Selector Tabs -->
+                    <div class="device-select-bar" id="device-tabs-container">
+                        <!-- Rendered dynamically -->
+                    </div>
+
+                    <!-- Active Device Status Box -->
+                    <div class="device-status-box">
+                        <div class="status-main-info">
+                            <div class="device-title-area">
+                                <h3 id="dev-name">Laptop-Alpha</h3>
+                                <div class="mac-badge">
+                                    <span>MAC: <code id="dev-mac">00:1E:67:98:2A:1B</code></span>
+                                    <span class="regex-tag-ok">✓ Regex Valid</span>
+                                </div>
+                            </div>
+                            <div class="ip-display-pill unassigned" id="dev-ip">
+                                0.0.0.0 (Unassigned)
+                            </div>
+                        </div>
+
+                        <!-- Lease Expiry Progress Meter -->
+                        <div class="lease-meter-container">
+                            <div class="lease-meter-label">
+                                <span>Lease Countdown (T1 = 50% Renewal Threshold)</span>
+                                <span id="dev-lease-label">No active lease</span>
+                            </div>
+                            <div class="lease-track">
+                                <div class="lease-fill" id="dev-lease-fill" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4 Big Action Buttons -->
+                    <div class="action-buttons-grid">
+                        <button class="btn-dora" id="btn-dora-action">▶ Get IP (DORA)</button>
+                        <button class="btn-secondary" id="btn-renew-action">⟳ Renew Lease</button>
+                        <button class="btn-secondary" id="btn-release-action">⏏ Release IP</button>
+                        <button class="btn-warn" id="btn-conflict-action">⚡ Test Conflict</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Finite-State Machine (FSM) Lifecycle -->
+            <div class="clean-card">
+                <div class="card-top">
+                    <span class="card-title">🔄 2. Finite-State Machine (FSM) Lifecycle</span>
+                    <span style="font-size: 11px; color: var(--text-muted);">RFC 2131 Lease States</span>
+                </div>
+                <div class="card-body">
+                    <div class="fsm-pipeline-container">
+                        
+                        <!-- Current State Banner -->
+                        <div class="fsm-banner">
+                            <div>
+                                <span style="font-size: 10px; color: var(--text-muted); display: block; font-weight:700;">CURRENT FSM STATE:</span>
+                                <span class="fsm-state-badge" id="fsm-badge" style="background:#64748b; color:#fff;">INIT</span>
+                            </div>
+                            <div style="text-align: right; max-width: 65%;">
+                                <span style="font-size: 10px; color: var(--text-muted); display: block; font-weight:700;">STATE EXPLANATION:</span>
+                                <p class="fsm-explain-text" id="fsm-explain">Device interface unconfigured (IP: 0.0.0.0). Ready for DHCP discovery.</p>
+                            </div>
+                        </div>
+
+                        <!-- Sequential State Nodes -->
+                        <div class="fsm-nodes-track">
+                            <div class="fsm-step-node is-active" id="step-init">
+                                <span class="node-num">STEP 0</span>
+                                <span class="node-name">INIT</span>
+                            </div>
+                            <div class="fsm-step-node" id="step-discover">
+                                <span class="node-num">STEP 1</span>
+                                <span class="node-name">DISCOVER</span>
+                            </div>
+                            <div class="fsm-step-node" id="step-offer">
+                                <span class="node-num">STEP 2</span>
+                                <span class="node-name">OFFER</span>
+                            </div>
+                            <div class="fsm-step-node" id="step-bound">
+                                <span class="node-num">STEP 3</span>
+                                <span class="node-name">BOUND</span>
+                            </div>
+                            <div class="fsm-step-node" id="step-renewing">
+                                <span class="node-num">STEP 4</span>
+                                <span class="node-name">RENEWING</span>
+                            </div>
+                            <div class="fsm-step-node" id="step-released">
+                                <span class="node-num">FINAL</span>
+                                <span class="node-name">RELEASED</span>
+                            </div>
+                        </div>
+
+                        <div style="font-size: 12px; color: var(--text-dim); text-align: center;">
+                            Lifecycle: <code>INIT</code> ➔ <code>DISCOVER</code> ➔ <code>OFFER</code> ➔ <code>REQUEST</code> ➔ <code>BOUND</code> ➔ <code>RENEWING</code> ➔ <code>RELEASED</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Bottom Half: Message Sequence, IP Pool Heatmap & Regex Tester -->
+        <div class="dashboard-row" style="grid-template-columns: 1.2fr 0.9fr 0.9fr;">
+            
+            <!-- Card 3: Live DORA Message Sequence -->
+            <div class="clean-card">
+                <div class="card-top">
+                    <span class="card-title">📨 3. Message Exchanges (DORA)</span>
+                    <span style="font-size: 11px; color: var(--text-muted);">Live packet history</span>
+                </div>
+                <div class="card-body">
+                    <div class="seq-list-container" id="seq-feed-container">
+                        <div class="empty-hint">No messages yet. Click "Get IP (DORA)" to begin.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 4: IP Address Pool & Conflicts -->
+            <div class="clean-card">
+                <div class="card-top">
+                    <span class="card-title">▦ 4. IP Pool & Conflicts</span>
+                    <span style="font-size: 11px; color: var(--text-muted);" id="pool-counter">0 Leased / 20 Available</span>
+                </div>
+                <div class="card-body">
+                    <div class="pool-heatmap-grid" id="pool-grid-container">
+                        <!-- Rendered dynamically -->
+                    </div>
+                    <div style="display: flex; gap: 12px; font-size: 11px; color: var(--text-muted); justify-content: center; margin-top: 4px;">
+                        <span>🟢 <strong style="color:#4ade80;">Green:</strong> Bound</span>
+                        <span>⚪ <strong style="color:#94a3b8;">Grey:</strong> Available</span>
+                        <span>🔴 <strong style="color:#f87171;">Red:</strong> Conflict</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 5: Regular Expression Tester -->
+            <div class="clean-card">
+                <div class="card-top">
+                    <span class="card-title">🔍 5. Regex Address Validator</span>
+                    <span style="font-size: 11px; color: var(--color-blue); font-weight: 600;">⚡ Auto-Syncs with Allocated IP</span>
+                </div>
+                <div class="card-body">
+                    <div class="regex-box">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <label style="font-size: 11px; font-weight: 600; color: var(--text-muted);">Current Address Under Test:</label>
+                        </div>
+                        <div class="regex-input-row">
+                            <input type="text" class="clean-input" id="regex-quick-input" value="192.168.1.100" placeholder="e.g. 192.168.1.1 or 00:1A:2B:3C:4D:5E">
+                        </div>
+
+                        <!-- Quick Test Shortcuts -->
+                        <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px;">
+                            <button class="btn-scenario" id="btn-regex-sync-ip" style="padding: 3px 8px; font-size: 10px;">📌 Sync Device IP</button>
+                            <button class="btn-scenario" id="btn-regex-sync-mac" style="padding: 3px 8px; font-size: 10px;">🏷️ Sync Device MAC</button>
+                            <button class="btn-scenario" id="btn-regex-bad-ip" style="padding: 3px 8px; font-size: 10px; color:#f87171;">✗ Bad IP (300)</button>
+                            <button class="btn-scenario" id="btn-regex-bad-mac" style="padding: 3px 8px; font-size: 10px; color:#f87171;">✗ Bad MAC</button>
+                        </div>
+
+                        <div class="regex-result-pill res-valid" id="regex-quick-result">✓ VALID IPv4 ADDRESS</div>
+                        <p class="regex-info-note" id="regex-quick-note">
+                            Regex check passed: 4 decimal octets (0-255).
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Application Script Loading -->
+    <script>
+/* --- File: src/js/regex-validator.js --- */
+/**
+ * Network Address Allocation and DHCP Lease Simulation System
+ * Regular Expression Validation Module
+ * 
+ * Provides rigorous RFC-compliant regular expressions and validation utilities
+ * for IPv4 addresses, MAC addresses (IEEE 802), Subnet Masks, CIDR prefixes, and Hostnames.
+ */
+
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define([], factory);
+    } else if (typeof module === 'object' && module.exports) {
+        module.exports = factory();
+    } else {
+        root.RegexValidator = factory();
+    }
+}(typeof self !== 'undefined' ? self : this, function () {
+
+    /**
+     * Core Regular Expressions
+     */
+    const PATTERNS = {
+        // Strict IPv4: 4 octets separated by dots, each 0-255, no leading zeros unless single '0'
+        IPV4: /^(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(?:\.(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3}$/,
+
+        // MAC Address: 6 pairs of hex digits separated by colons or hyphens, or 3 groups of 4 hex digits (Cisco)
+        MAC_COLON: /^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$/,
+        MAC_HYPHEN: /^([0-9A-Fa-f]{2}-){5}[0-9A-Fa-f]{2}$/,
+        MAC_CISCO: /^[0-9A-Fa-f]{4}\.[0-9A-Fa-f]{4}\.[0-9A-Fa-f]{4}$/,
+        MAC_UNIFIED: /^(?:[0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}$|^[0-9A-Fa-f]{4}\.[0-9A-Fa-f]{4}\.[0-9A-Fa-f]{4}$/,
+
+        // Subnet Mask: Valid contiguous IPv4 netmask (/8 to /30)
+        SUBNET_MASK: /^(255\.(255\.(255\.(0|128|192|224|240|248|252|254|255)|(0|128|192|224|240|248|252|254|255)\.0)|(0|128|192|224|240|248|252|254|255)\.0\.0)|(0|128|192|224|240|248|252|254|255)\.0\.0\.0)$/,
+
+        // CIDR Notation: IPv4 followed by / prefix between 1 and 32
+        CIDR: /^(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(?:\.(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3}\/(?:[1-9]|[12][0-9]|3[0-2])$/,
+
+        // RFC 1123 Hostname: 1-63 alphanumeric characters per label, hyphens allowed, total max 253
+        HOSTNAME: /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+
+        // Hex Transaction ID (xid): 8 hexadecimal characters (32-bit uint in hex)
+        HEX_XID: /^0x[0-9A-Fa-f]{8}$|^[0-9A-Fa-f]{8}$/
+    };
+
+    /**
+     * Pattern Explanations for the interactive Regex Lab & UI tooltips
+     */
+    const PATTERN_EXPLANATIONS = {
+        IPV4: {
+            name: "IPv4 Address",
+            pattern: "^(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(?:\\.(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3}$",
+            rfc: "RFC 791 / RFC 1166",
+            breakdown: [
+                { token: "^ ... $", desc: "Anchors match to entire input string from start to finish" },
+                { token: "25[0-5]", desc: "Matches numbers in range 250 - 255" },
+                { token: "2[0-4][0-9]", desc: "Matches numbers in range 200 - 249" },
+                { token: "1[0-9]{2}", desc: "Matches numbers in range 100 - 199" },
+                { token: "[1-9]?[0-9]", desc: "Matches numbers in range 0 - 99 without leading zero (except '0')" },
+                { token: "(?:\\....){3}", desc: "Repeats the dot followed by 0-255 octet exactly 3 times" }
+            ],
+            examplesValid: ["192.168.1.1", "10.0.0.254", "172.16.50.100", "0.0.0.0", "255.255.255.255"],
+            examplesInvalid: ["192.168.1.256", "10.0.0.01", "172.300.1.1", "192.168.1", "192.168.1.1.1"]
+        },
+        MAC: {
+            name: "MAC Address (IEEE 802)",
+            pattern: "^(?:[0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}$|^[0-9A-Fa-f]{4}\\.[0-9A-Fa-f]{4}\\.[0-9A-Fa-f]{4}$",
+            rfc: "IEEE Std 802-2014",
+            breakdown: [
+                { token: "[0-9A-Fa-f]{2}", desc: "Matches 2 hexadecimal digits (one byte / octet)" },
+                { token: "[:-]", desc: "Matches either a colon ':' (standard) or hyphen '-' (Windows) separator" },
+                { token: "{5}", desc: "Repeats the byte-separator pattern 5 times" },
+                { token: "|", desc: "Alternation operator: permits Cisco 3-group dotted format (e.g. 001a.2b3c.4d5e)" }
+            ],
+            examplesValid: ["00:1A:2B:3C:4D:5E", "52-54-00-12-34-56", "001A.2B3C.4D5E", "aa:bb:cc:dd:ee:ff"],
+            examplesInvalid: ["00:1A:2B:3C:4D", "00:1A:2B:3C:4D:5G", "001A-2B3C-4D5E", "00:1A:2B:3C:4D:5E:6F"]
+        },
+        SUBNET_MASK: {
+            name: "Subnet Mask (Contiguous)",
+            pattern: "^(255\\.(255\\.(255\\.(0|128|192|224|240|248|252|254|255)|(0|128|192|224|240|248|252|254|255)\\.0)|(0|128|192|224|240|248|252|254|255)\\.0\\.0)|(0|128|192|224|240|248|252|254|255)\\.0\\.0\\.0)$",
+            rfc: "RFC 950 / RFC 1519 (CIDR)",
+            breakdown: [
+                { token: "255\\.", desc: "Leading octets must be full 1-bits (255)" },
+                { token: "(0|128|...|255)", desc: "Transition octet must have contiguous high-order 1-bits" },
+                { token: "\\.0", desc: "All trailing octets after transition must be pure zeros" }
+            ],
+            examplesValid: ["255.255.255.0", "255.255.0.0", "255.0.0.0", "255.255.255.192", "255.255.254.0"],
+            examplesInvalid: ["255.255.255.1", "255.255.0.255", "255.240.255.0", "256.255.255.0"]
+        },
+        CIDR: {
+            name: "CIDR Prefix",
+            pattern: "^(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(?:\\.(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3}\\/(?:[1-9]|[12][0-9]|3[0-2])$",
+            rfc: "RFC 4632",
+            breakdown: [
+                { token: "IPv4", desc: "Valid IPv4 address as network identifier" },
+                { token: "\\/", desc: "Slash separator" },
+                { token: "[1-9]|[12][0-9]|3[0-2]", desc: "Prefix length between 1 and 32" }
+            ],
+            examplesValid: ["192.168.1.0/24", "10.0.0.0/8", "172.16.0.0/16", "192.168.1.128/25"],
+            examplesInvalid: ["192.168.1.0/33", "192.168.1.0/0", "192.168.1.256/24", "192.168.1.0"]
+        },
+        HOSTNAME: {
+            name: "RFC 1123 Hostname",
+            pattern: "^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$",
+            rfc: "RFC 952 / RFC 1123",
+            breakdown: [
+                { token: "^[a-zA-Z0-9]", desc: "Label must begin with an alphanumeric character" },
+                { token: "[a-zA-Z0-9-]{0,61}", desc: "Label body may contain letters, numbers, and hyphens (up to 63 chars total)" },
+                { token: "[a-zA-Z0-9]$", desc: "Label must not end with a hyphen" },
+                { token: "(\\....)*", desc: "Allows dot-separated domain labels" }
+            ],
+            examplesValid: ["laptop-alpha", "node-01.local", "server-dhcp", "host1", "iot-temp-sensor"],
+            examplesInvalid: ["-laptop", "laptop-", "node..local", "host_name", "host@name"]
+        }
+    };
+
+    /**
+     * IP and Network Math Utility Functions
+     */
+    function ipToInt(ip) {
+        if (!PATTERNS.IPV4.test(ip)) return null;
+        return ip.split('.').reduce((acc, octet) => (acc << 8) + parseInt(octet, 10), 0) >>> 0;
+    }
+
+    function intToIp(intVal) {
+        return [
+            (intVal >>> 24) & 255,
+            (intVal >>> 16) & 255,
+            (intVal >>> 8) & 255,
+            intVal & 255
+        ].join('.');
+    }
+
+    function maskToCidr(mask) {
+        if (!PATTERNS.SUBNET_MASK.test(mask)) return null;
+        const intVal = ipToInt(mask);
+        let count = 0;
+        let bits = intVal;
+        while (bits) {
+            count += bits & 1;
+            bits >>>= 1;
+        }
+        return count;
+    }
+
+    function cidrToMask(cidr) {
+        if (cidr < 0 || cidr > 32) return null;
+        if (cidr === 0) return '0.0.0.0';
+        const maskInt = (0xFFFFFFFF << (32 - cidr)) >>> 0;
+        return intToIp(maskInt);
+    }
+
+    function getNetworkAddress(ip, mask) {
+        const ipInt = ipToInt(ip);
+        const maskInt = ipToInt(mask);
+        if (ipInt === null || maskInt === null) return null;
+        return intToIp((ipInt & maskInt) >>> 0);
+    }
+
+    function getBroadcastAddress(ip, mask) {
+        const ipInt = ipToInt(ip);
+        const maskInt = ipToInt(mask);
+        if (ipInt === null || maskInt === null) return null;
+        return intToIp((ipInt | (~maskInt >>> 0)) >>> 0);
+    }
+
+    function isIpInSubnet(ip, subnetIp, mask) {
+        const ipInt = ipToInt(ip);
+        const subnetInt = ipToInt(subnetIp);
+        const maskInt = ipToInt(mask);
+        if (ipInt === null || subnetInt === null || maskInt === null) return false;
+        return ((ipInt & maskInt) >>> 0) === ((subnetInt & maskInt) >>> 0);
+    }
+
+    function normalizeMac(mac) {
+        if (!PATTERNS.MAC_UNIFIED.test(mac)) return null;
+        // Clean separators and format as uppercase colon-separated XX:XX:XX:XX:XX:XX
+        const clean = mac.replace(/[:-]/g, '').replace(/\./g, '').toUpperCase();
+        if (clean.length !== 12) return null;
+        return clean.match(/.{1,2}/g).join(':');
+    }
+
+    function isMulticastMac(mac) {
+        const norm = normalizeMac(mac);
+        if (!norm) return false;
+        const firstByte = parseInt(norm.substring(0, 2), 16);
+        return (firstByte & 0x01) === 1;
+    }
+
+    /**
+     * Comprehensive Validation API
+     */
+    return {
+        PATTERNS,
+        PATTERN_EXPLANATIONS,
+
+        // Core Validators returning boolean
+        validateIpv4(ip) {
+            return PATTERNS.IPV4.test(String(ip).trim());
+        },
+
+        validateMac(mac) {
+            return PATTERNS.MAC_UNIFIED.test(String(mac).trim());
+        },
+
+        validateSubnetMask(mask) {
+            return PATTERNS.SUBNET_MASK.test(String(mask).trim());
+        },
+
+        validateCidr(cidr) {
+            return PATTERNS.CIDR.test(String(cidr).trim());
+        },
+
+        validateHostname(hostname) {
+            return PATTERNS.HOSTNAME.test(String(hostname).trim());
+        },
+
+        validateHexXid(xid) {
+            return PATTERNS.HEX_XID.test(String(xid).trim());
+        },
+
+        // Detailed Validators with error diagnostics
+        verifyIpAddress(ip, subnet = null, mask = null) {
+            const trimmed = String(ip || '').trim();
+            if (!trimmed) {
+                return { valid: false, error: "IP address cannot be empty" };
+            }
+            if (!PATTERNS.IPV4.test(trimmed)) {
+                return { valid: false, error: "Invalid IPv4 format. Expected 4 decimal octets (0-255) separated by dots." };
+            }
+
+            const ipInt = ipToInt(trimmed);
+            const firstOctet = parseInt(trimmed.split('.')[0], 10);
+
+            if (firstOctet === 127) {
+                return { valid: false, error: "Loopback address (127.0.0.0/8) cannot be assigned by DHCP", isSpecial: true };
+            }
+            if (firstOctet >= 224 && firstOctet <= 239) {
+                return { valid: false, error: "Multicast address (Class D: 224.0.0.0/4) cannot be assigned to hosts", isSpecial: true };
+            }
+            if (firstOctet >= 240) {
+                return { valid: false, error: "Reserved address (Class E: 240.0.0.0/4) cannot be assigned", isSpecial: true };
+            }
+            if (trimmed === '0.0.0.0') {
+                return { valid: false, error: "0.0.0.0 is an unconfigured broadcast source, not assignable as client lease", isSpecial: true };
+            }
+
+            if (subnet && mask && PATTERNS.SUBNET_MASK.test(mask)) {
+                const netAddr = getNetworkAddress(subnet, mask);
+                const bcastAddr = getBroadcastAddress(subnet, mask);
+
+                if (!isIpInSubnet(trimmed, subnet, mask)) {
+                    return { valid: false, error: `IP ${trimmed} is outside the configured subnet ${netAddr}/${maskToCidr(mask)}` };
+                }
+                if (trimmed === netAddr) {
+                    return { valid: false, error: `IP ${trimmed} is the network identifier address and cannot be leased` };
+                }
+                if (trimmed === bcastAddr) {
+                    return { valid: false, error: `IP ${trimmed} is the directed broadcast address and cannot be leased` };
+                }
+            }
+
+            return { valid: true, error: null, normalized: trimmed, integer: ipInt };
+        },
+
+        verifyMacAddress(mac) {
+            const trimmed = String(mac || '').trim();
+            if (!trimmed) {
+                return { valid: false, error: "MAC address cannot be empty" };
+            }
+            if (!PATTERNS.MAC_UNIFIED.test(trimmed)) {
+                return { 
+                    valid: false, 
+                    error: "Invalid MAC format. Expected 6 hex pairs (e.g. 00:1A:2B:3C:4D:5E or 00-1A-2B-3C-4D-5E) or Cisco format (001a.2b3c.4d5e)" 
+                };
+            }
+
+            const normalized = normalizeMac(trimmed);
+            if (isMulticastMac(trimmed)) {
+                return { 
+                    valid: false, 
+                    error: `MAC ${normalized} has multicast/broadcast bit set (least significant bit of first octet is 1). DHCP requires unicast client hardware address.` 
+                };
+            }
+
+            return { valid: true, error: null, normalized };
+        },
+
+        // Network calculation helpers
+        ipToInt,
+        intToIp,
+        maskToCidr,
+        cidrToMask,
+        getNetworkAddress,
+        getBroadcastAddress,
+        isIpInSubnet,
+        normalizeMac,
+        isMulticastMac
+    };
+}));
+
+
+/* --- File: src/js/packet.js --- */
+/**
+ * Network Address Allocation and DHCP Lease Simulation System
+ * RFC 2131 DHCP Packet & Message Specification
+ * 
+ * Implements complete DHCP / BOOTP packet structures, options encoding,
+ * transaction tracking, and helper constructors for DORA and ARP conflict packets.
+ */
+
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define(['./regex-validator'], factory);
+    } else if (typeof module === 'object' && module.exports) {
+        module.exports = factory(require('./regex-validator'));
+    } else {
+        root.DhcpPacket = factory(root.RegexValidator);
+    }
+}(typeof self !== 'undefined' ? self : this, function (RegexValidator) {
+
+    // DHCP Message Types (Option 53)
+    const DHCP_MESSAGE_TYPES = {
+        1: { name: 'DHCPDISCOVER', code: 1, dir: 'C->S', desc: 'Client broadcast to locate available DHCP servers' },
+        2: { name: 'DHCPOFFER',    code: 2, dir: 'S->C', desc: 'Server offer of configuration parameters for client' },
+        3: { name: 'DHCPREQUEST',  code: 3, dir: 'C->S', desc: 'Client broadcast requesting offered parameters or extending lease' },
+        4: { name: 'DHCPDECLINE',  code: 4, dir: 'C->S', desc: 'Client notification to server that network address is already in use (conflict)' },
+        5: { name: 'DHCPACK',      code: 5, dir: 'S->C', desc: 'Server acknowledgment with committed network address and configuration parameters' },
+        6: { name: 'DHCPNAK',      code: 6, dir: 'S->C', desc: 'Server negative acknowledgment refusing lease or signaling invalid network address' },
+        7: { name: 'DHCPRELEASE',  code: 7, dir: 'C->S', desc: 'Client relinquishing network address and canceling remaining lease' },
+        8: { name: 'DHCPINFORM',   code: 8, dir: 'C->S', desc: 'Client querying local configuration parameters without requesting an IP address' },
+        
+        // Special Simulation Protocol Messages
+        90: { name: 'ARP_PROBE',   code: 90, dir: 'C->ALL', desc: 'ARP Probe broadcast to detect potential address collisions before binding' },
+        91: { name: 'ARP_REPLY',   code: 91, dir: 'H->C',   desc: 'ARP Reply from conflicting host asserting ownership of offered IP' }
+    };
+
+    const DHCP_OPCODES = {
+        BOOTREQUEST: 1,
+        BOOTREPLY: 2
+    };
+
+    /**
+     * Generate a cryptographically pseudo-random 32-bit transaction ID (xid)
+     */
+    function generateXid() {
+        const rand = Math.floor(Math.random() * 0xFFFFFFFF);
+        return '0x' + rand.toString(16).padStart(8, '0').toUpperCase();
+    }
+
+    /**
+     * Packet Class
+     */
+    class Packet {
+        constructor(params = {}) {
+            this.id = params.id || ('pkt-' + Math.random().toString(36).substring(2, 9));
+            this.timestamp = params.timestamp || Date.now();
+            this.simTick = params.simTick || 0;
+
+            // Network Layer Headers
+            this.srcMac = params.srcMac || '00:00:00:00:00:00';
+            this.dstMac = params.dstMac || 'FF:FF:FF:FF:FF:FF';
+            this.srcIp = params.srcIp || '0.0.0.0';
+            this.dstIp = params.dstIp || '255.255.255.255';
+            this.srcPort = params.srcPort || 68; // Client default UDP port
+            this.dstPort = params.dstPort || 67; // Server default UDP port
+
+            // RFC 2131 BOOTP / DHCP Protocol Header Fields
+            this.op = params.op || DHCP_OPCODES.BOOTREQUEST; // 1 = BOOTREQUEST, 2 = BOOTREPLY
+            this.htype = params.htype || 1;                  // 1 = 10Mb Ethernet
+            this.hlen = params.hlen || 6;                    // 6 octets MAC
+            this.hops = params.hops || 0;                    // Relay agent hop count
+            this.xid = params.xid || generateXid();          // 32-bit transaction ID
+            this.secs = params.secs || 0;                    // Seconds elapsed since acquisition began
+            this.flags = params.flags || 0x8000;             // 0x8000 = Broadcast, 0x0000 = Unicast
+            this.ciaddr = params.ciaddr || '0.0.0.0';        // Client IP address (BOUND/RENEW)
+            this.yiaddr = params.yiaddr || '0.0.0.0';        // 'Your' (client) IP address
+            this.siaddr = params.siaddr || '0.0.0.0';        // Next bootstrap server IP
+            this.giaddr = params.giaddr || '0.0.0.0';        // Relay agent IP address
+            this.chaddr = params.chaddr || params.srcMac || '00:00:00:00:00:00'; // Client Hardware MAC
+            this.sname = params.sname || '';                 // Optional server host name
+            this.file = params.file || '';                   // Boot file name
+
+            // DHCP Options (RFC 2132)
+            this.options = Object.assign({}, params.options || {});
+            
+            // Primary Message Type (Option 53)
+            this.messageType = params.messageType || (this.options[53] ? this.options[53].code : 1);
+            if (!this.options[53]) {
+                this.options[53] = {
+                    tag: 53,
+                    name: 'DHCP Message Type',
+                    code: this.messageType,
+                    value: DHCP_MESSAGE_TYPES[this.messageType] ? DHCP_MESSAGE_TYPES[this.messageType].name : `Type ${this.messageType}`
+                };
+            }
+
+            // Packet Simulation Metadata
+            this.senderRole = params.senderRole || 'Client'; // Client, Server, RogueServer, Host
+            this.senderName = params.senderName || 'Device';
+            this.targetRole = params.targetRole || 'Server';
+            this.targetName = params.targetName || 'DHCP Server';
+            this.isBroadcast = this.dstIp === '255.255.255.255' || this.dstMac === 'FF:FF:FF:FF:FF:FF';
+            this.isCorrupted = !!params.isCorrupted;
+            this.corruptionReason = params.corruptionReason || null;
+            this.status = 'transmitted'; // transmitted, delivered, dropped, rejected
+        }
+
+        /**
+         * Human-readable label for sequence diagram
+         */
+        getTypeName() {
+            return DHCP_MESSAGE_TYPES[this.messageType] ? DHCP_MESSAGE_TYPES[this.messageType].name : `DHCP #${this.messageType}`;
+        }
+
+        getTypeDescription() {
+            return DHCP_MESSAGE_TYPES[this.messageType] ? DHCP_MESSAGE_TYPES[this.messageType].desc : 'Custom DHCP Message';
+        }
+
+        getSummary() {
+            const type = this.getTypeName();
+            if (this.messageType === 1) { // DISCOVER
+                return `${type} from ${this.chaddr} (xid: ${this.xid})`;
+            } else if (this.messageType === 2) { // OFFER
+                return `${type}: ${this.yiaddr} offered by ${this.options[54] ? this.options[54].value : this.srcIp} to ${this.chaddr}`;
+            } else if (this.messageType === 3) { // REQUEST
+                const reqIp = this.options[50] ? this.options[50].value : (this.ciaddr !== '0.0.0.0' ? this.ciaddr : this.yiaddr);
+                return `${type} for ${reqIp} (Server: ${this.options[54] ? this.options[54].value : 'Any'})`;
+            } else if (this.messageType === 4) { // DECLINE
+                return `${type}: IP ${this.options[50] ? this.options[50].value : this.ciaddr} conflicted!`;
+            } else if (this.messageType === 5) { // ACK
+                return `${type}: ${this.yiaddr} leased for ${this.options[51] ? this.options[51].value : 'default'}s`;
+            } else if (this.messageType === 6) { // NAK
+                return `${type}: Lease request rejected by ${this.srcIp} (${this.options[56] ? this.options[56].value : 'Not Available'})`;
+            } else if (this.messageType === 7) { // RELEASE
+                return `${type}: Client ${this.chaddr} released IP ${this.ciaddr}`;
+            } else if (this.messageType === 90) { // ARP PROBE
+                return `ARP Probe: Who has ${this.options[90] ? this.options[90].targetIp : this.yiaddr}? (From ${this.srcMac})`;
+            } else if (this.messageType === 91) { // ARP REPLY
+                return `ARP Collision: ${this.srcMac} claims IP ${this.srcIp}!`;
+            }
+            return `${type} (xid: ${this.xid})`;
+        }
+
+        /**
+         * Validates packet headers using RegexValidator
+         */
+        validatePacket() {
+            const errors = [];
+            if (!RegexValidator.validateMac(this.srcMac)) {
+                errors.push(`Invalid source MAC format: ${this.srcMac}`);
+            }
+            if (!RegexValidator.validateMac(this.chaddr)) {
+                errors.push(`Invalid chaddr (client hardware MAC): ${this.chaddr}`);
+            }
+            if (!RegexValidator.validateIpv4(this.srcIp)) {
+                errors.push(`Invalid source IP: ${this.srcIp}`);
+            }
+            if (!RegexValidator.validateIpv4(this.dstIp)) {
+                errors.push(`Invalid destination IP: ${this.dstIp}`);
+            }
+            if (!RegexValidator.validateHexXid(this.xid)) {
+                errors.push(`Invalid xid transaction format: ${this.xid}`);
+            }
+            return {
+                valid: errors.length === 0,
+                errors
+            };
+        }
+    }
+
+    /**
+     * Factory methods for standard DHCP & ARP packets
+     */
+    const PacketFactory = {
+        createDiscover(client, options = {}) {
+            const xid = options.xid || generateXid();
+            return new Packet({
+                srcMac: client.mac,
+                dstMac: 'FF:FF:FF:FF:FF:FF',
+                srcIp: '0.0.0.0',
+                dstIp: '255.255.255.255',
+                srcPort: 68,
+                dstPort: 67,
+                op: DHCP_OPCODES.BOOTREQUEST,
+                xid: xid,
+                flags: 0x8000, // Broadcast
+                chaddr: client.mac,
+                messageType: 1,
+                senderRole: 'Client',
+                senderName: client.hostname || 'Client',
+                targetRole: 'Server',
+                targetName: 'DHCP Broadcast',
+                options: {
+                    53: { tag: 53, name: 'DHCP Message Type', code: 1, value: 'DHCPDISCOVER' },
+                    55: { tag: 55, name: 'Parameter Request List', value: [1, 3, 6, 15, 51, 58, 59] },
+                    12: { tag: 12, name: 'Host Name', value: client.hostname || 'Client' },
+                    61: { tag: 61, name: 'Client Identifier', value: `01:${client.mac}` },
+                    ...(options.requestedIp ? {
+                        50: { tag: 50, name: 'Requested IP Address', value: options.requestedIp }
+                    } : {})
+                }
+            });
+        },
+
+        createOffer(server, clientPacket, offeredIp, leaseDuration = 300) {
+            const t1 = Math.floor(leaseDuration * 0.5);
+            const t2 = Math.floor(leaseDuration * 0.875);
+            const isBroadcast = (clientPacket.flags & 0x8000) !== 0 || clientPacket.ciaddr === '0.0.0.0';
+
+            return new Packet({
+                srcMac: server.mac,
+                dstMac: isBroadcast ? 'FF:FF:FF:FF:FF:FF' : clientPacket.chaddr,
+                srcIp: server.ip,
+                dstIp: isBroadcast ? '255.255.255.255' : offeredIp,
+                srcPort: 67,
+                dstPort: 68,
+                op: DHCP_OPCODES.BOOTREPLY,
+                xid: clientPacket.xid,
+                flags: clientPacket.flags,
+                ciaddr: '0.0.0.0',
+                yiaddr: offeredIp,
+                siaddr: server.ip,
+                chaddr: clientPacket.chaddr,
+                messageType: 2,
+                senderRole: server.isRogue ? 'RogueServer' : 'Server',
+                senderName: server.name || 'DHCP Server',
+                targetRole: 'Client',
+                targetName: clientPacket.senderName,
+                options: {
+                    53: { tag: 53, name: 'DHCP Message Type', code: 2, value: 'DHCPOFFER' },
+                    54: { tag: 54, name: 'Server Identifier', value: server.ip },
+                    51: { tag: 51, name: 'IP Address Lease Time', value: leaseDuration },
+                    58: { tag: 58, name: 'Renewal (T1) Time Value', value: t1 },
+                    59: { tag: 59, name: 'Rebinding (T2) Time Value', value: t2 },
+                    1:  { tag: 1,  name: 'Subnet Mask', value: server.subnetMask },
+                    3:  { tag: 3,  name: 'Router (Default Gateway)', value: server.gateway },
+                    6:  { tag: 6,  name: 'Domain Name Server', value: server.dns },
+                    255:{ tag: 255,name: 'End Option', value: 'END' }
+                }
+            });
+        },
+
+        createRequest(client, offerPacket, isRenewal = false, isRebinding = false) {
+            const serverId = offerPacket.options[54] ? offerPacket.options[54].value : offerPacket.srcIp;
+            const targetIp = offerPacket.yiaddr || client.ip;
+            const isUnicast = isRenewal && !isRebinding;
+
+            return new Packet({
+                srcMac: client.mac,
+                dstMac: isUnicast ? offerPacket.srcMac : 'FF:FF:FF:FF:FF:FF',
+                srcIp: isRenewal ? client.ip : '0.0.0.0',
+                dstIp: isUnicast ? serverId : '255.255.255.255',
+                srcPort: 68,
+                dstPort: 67,
+                op: DHCP_OPCODES.BOOTREQUEST,
+                xid: offerPacket.xid || generateXid(),
+                flags: isUnicast ? 0x0000 : 0x8000,
+                ciaddr: isRenewal ? client.ip : '0.0.0.0',
+                yiaddr: '0.0.0.0',
+                chaddr: client.mac,
+                messageType: 3,
+                senderRole: 'Client',
+                senderName: client.hostname,
+                targetRole: isUnicast ? 'Server' : 'All',
+                targetName: isUnicast ? 'DHCP Server (Unicast)' : 'DHCP Broadcast',
+                options: {
+                    53: { tag: 53, name: 'DHCP Message Type', code: 3, value: 'DHCPREQUEST' },
+                    50: { tag: 50, name: 'Requested IP Address', value: targetIp },
+                    ...(!isRenewal ? { 54: { tag: 54, name: 'Server Identifier', value: serverId } } : {}),
+                    12: { tag: 12, name: 'Host Name', value: client.hostname },
+                    61: { tag: 61, name: 'Client Identifier', value: `01:${client.mac}` },
+                    55: { tag: 55, name: 'Parameter Request List', value: [1, 3, 6, 15, 51, 58, 59] }
+                }
+            });
+        },
+
+        createAck(server, requestPacket, leaseDuration = 300) {
+            const reqIp = requestPacket.options[50] ? requestPacket.options[50].value : requestPacket.ciaddr;
+            const t1 = Math.floor(leaseDuration * 0.5);
+            const t2 = Math.floor(leaseDuration * 0.875);
+            const isBroadcast = (requestPacket.flags & 0x8000) !== 0 || requestPacket.ciaddr === '0.0.0.0';
+
+            return new Packet({
+                srcMac: server.mac,
+                dstMac: isBroadcast ? 'FF:FF:FF:FF:FF:FF' : requestPacket.chaddr,
+                srcIp: server.ip,
+                dstIp: isBroadcast ? '255.255.255.255' : reqIp,
+                srcPort: 67,
+                dstPort: 68,
+                op: DHCP_OPCODES.BOOTREPLY,
+                xid: requestPacket.xid,
+                flags: requestPacket.flags,
+                ciaddr: requestPacket.ciaddr,
+                yiaddr: reqIp,
+                siaddr: server.ip,
+                chaddr: requestPacket.chaddr,
+                messageType: 5,
+                senderRole: server.isRogue ? 'RogueServer' : 'Server',
+                senderName: server.name || 'DHCP Server',
+                targetRole: 'Client',
+                targetName: requestPacket.senderName,
+                options: {
+                    53: { tag: 53, name: 'DHCP Message Type', code: 5, value: 'DHCPACK' },
+                    54: { tag: 54, name: 'Server Identifier', value: server.ip },
+                    51: { tag: 51, name: 'IP Address Lease Time', value: leaseDuration },
+                    58: { tag: 58, name: 'Renewal (T1) Time Value', value: t1 },
+                    59: { tag: 59, name: 'Rebinding (T2) Time Value', value: t2 },
+                    1:  { tag: 1,  name: 'Subnet Mask', value: server.subnetMask },
+                    3:  { tag: 3,  name: 'Router (Default Gateway)', value: server.gateway },
+                    6:  { tag: 6,  name: 'Domain Name Server', value: server.dns },
+                    255:{ tag: 255,name: 'End Option', value: 'END' }
+                }
+            });
+        },
+
+        createNak(server, requestPacket, reason = 'Address Not Available or Invalid') {
+            return new Packet({
+                srcMac: server.mac,
+                dstMac: 'FF:FF:FF:FF:FF:FF',
+                srcIp: server.ip,
+                dstIp: '255.255.255.255',
+                srcPort: 67,
+                dstPort: 68,
+                op: DHCP_OPCODES.BOOTREPLY,
+                xid: requestPacket.xid,
+                flags: 0x8000,
+                ciaddr: '0.0.0.0',
+                yiaddr: '0.0.0.0',
+                siaddr: server.ip,
+                chaddr: requestPacket.chaddr,
+                messageType: 6,
+                senderRole: server.isRogue ? 'RogueServer' : 'Server',
+                senderName: server.name || 'DHCP Server',
+                targetRole: 'Client',
+                targetName: requestPacket.senderName,
+                options: {
+                    53: { tag: 53, name: 'DHCP Message Type', code: 6, value: 'DHCPNAK' },
+                    54: { tag: 54, name: 'Server Identifier', value: server.ip },
+                    56: { tag: 56, name: 'Message / Rejection Reason', value: reason },
+                    255:{ tag: 255,name: 'End Option', value: 'END' }
+                }
+            });
+        },
+
+        createDecline(client, offeredIp, serverIp, reason = 'Address collision detected via ARP probe') {
+            return new Packet({
+                srcMac: client.mac,
+                dstMac: 'FF:FF:FF:FF:FF:FF',
+                srcIp: '0.0.0.0',
+                dstIp: '255.255.255.255',
+                srcPort: 68,
+                dstPort: 67,
+                op: DHCP_OPCODES.BOOTREQUEST,
+                xid: generateXid(),
+                flags: 0x8000,
+                ciaddr: '0.0.0.0',
+                yiaddr: '0.0.0.0',
+                chaddr: client.mac,
+                messageType: 4,
+                senderRole: 'Client',
+                senderName: client.hostname,
+                targetRole: 'Server',
+                targetName: 'DHCP Server',
+                options: {
+                    53: { tag: 53, name: 'DHCP Message Type', code: 4, value: 'DHCPDECLINE' },
+                    50: { tag: 50, name: 'Requested IP Address (Declined)', value: offeredIp },
+                    54: { tag: 54, name: 'Server Identifier', value: serverIp },
+                    56: { tag: 56, name: 'Decline Reason', value: reason },
+                    61: { tag: 61, name: 'Client Identifier', value: `01:${client.mac}` }
+                }
+            });
+        },
+
+        createRelease(client, serverIp) {
+            return new Packet({
+                srcMac: client.mac,
+                dstMac: 'FF:FF:FF:FF:FF:FF',
+                srcIp: client.ip,
+                dstIp: serverIp,
+                srcPort: 68,
+                dstPort: 67,
+                op: DHCP_OPCODES.BOOTREQUEST,
+                xid: generateXid(),
+                flags: 0x0000,
+                ciaddr: client.ip,
+                yiaddr: '0.0.0.0',
+                chaddr: client.mac,
+                messageType: 7,
+                senderRole: 'Client',
+                senderName: client.hostname,
+                targetRole: 'Server',
+                targetName: 'DHCP Server',
+                options: {
+                    53: { tag: 53, name: 'DHCP Message Type', code: 7, value: 'DHCPRELEASE' },
+                    54: { tag: 54, name: 'Server Identifier', value: serverIp },
+                    61: { tag: 61, name: 'Client Identifier', value: `01:${client.mac}` }
+                }
+            });
+        },
+
+        createArpProbe(client, targetIp) {
+            return new Packet({
+                srcMac: client.mac,
+                dstMac: 'FF:FF:FF:FF:FF:FF',
+                srcIp: '0.0.0.0', // ARP probe has 0.0.0.0 as sender IP to avoid polluting caches
+                dstIp: targetIp,
+                op: 1, // ARP Request
+                messageType: 90,
+                senderRole: 'Client',
+                senderName: client.hostname,
+                targetRole: 'Network',
+                targetName: 'ARP Broadcast Probe',
+                options: {
+                    90: { tag: 90, name: 'ARP Probe', targetIp: targetIp, senderMac: client.mac }
+                }
+            });
+        },
+
+        createArpReply(conflictingHost, targetClient, ip) {
+            return new Packet({
+                srcMac: conflictingHost.mac,
+                dstMac: targetClient.mac,
+                srcIp: ip,
+                dstIp: '0.0.0.0',
+                op: 2, // ARP Reply
+                messageType: 91,
+                senderRole: 'Host',
+                senderName: conflictingHost.name || 'Conflicting Host',
+                targetRole: 'Client',
+                targetName: targetClient.hostname,
+                options: {
+                    91: { tag: 91, name: 'ARP Reply (Collision!)', ip: ip, claimingMac: conflictingHost.mac }
+                }
+            });
+        }
+    };
+
+    return {
+        Packet,
+        PacketFactory,
+        DHCP_MESSAGE_TYPES,
+        DHCP_OPCODES,
+        generateXid
+    };
+}));
+
+
+/* --- File: src/js/fsm.js --- */
+/**
+ * Network Address Allocation and DHCP Lease Simulation System
+ * Client DHCP Finite-State Machine (FSM) Module
+ * 
+ * Implements RFC 2131 State Transition Model for DHCP Lease Lifecycle:
+ * INIT -> SELECTING -> REQUESTING -> BOUND -> RENEWING -> REBINDING -> EXPIRED / RELEASED / DECLINED
+ */
+
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define([], factory);
+    } else if (typeof module === 'object' && module.exports) {
+        module.exports = factory();
+    } else {
+        root.DhcpFSM = factory();
+    }
+}(typeof self !== 'undefined' ? self : this, function () {
+
+    /**
+     * Complete RFC 2131 Lease States Definitions
+     */
+    const LEASE_STATES = {
+        INIT: {
+            id: 'INIT',
+            name: 'INIT',
+            label: 'Initial / Offline',
+            color: '#64748b', // Slate
+            accentColor: '#94a3b8',
+            icon: 'power-off',
+            description: 'Client interface unconfigured. No valid IP lease held.',
+            rfcSection: 'RFC 2131 Section 4.4.1',
+            allowedTransitions: ['SELECTING', 'REBOOTING', 'BOUND']
+        },
+        SELECTING: {
+            id: 'SELECTING',
+            name: 'SELECTING',
+            label: 'Discover / Selecting',
+            color: '#0284c7', // Sky Blue
+            accentColor: '#38bdf8',
+            icon: 'search',
+            description: 'Sent DHCPDISCOVER. Collecting and evaluating DHCPOFFERs from servers.',
+            rfcSection: 'RFC 2131 Section 4.4.1',
+            allowedTransitions: ['REQUESTING', 'INIT']
+        },
+        REQUESTING: {
+            id: 'REQUESTING',
+            name: 'REQUESTING',
+            label: 'Offer / Requesting',
+            color: '#d97706', // Amber
+            accentColor: '#fbbf24',
+            icon: 'send',
+            description: 'Selected an offer and broadcast DHCPREQUEST. Awaiting DHCPACK or DHCPNAK.',
+            rfcSection: 'RFC 2131 Section 4.4.1',
+            allowedTransitions: ['BOUND', 'INIT', 'DECLINED', 'SELECTING']
+        },
+        BOUND: {
+            id: 'BOUND',
+            name: 'BOUND',
+            label: 'Bound (Active Lease)',
+            color: '#059669', // Emerald Green
+            accentColor: '#34d399',
+            icon: 'check-circle',
+            description: 'Received DHCPACK and verified IP. Lease active. Operating normally.',
+            rfcSection: 'RFC 2131 Section 4.4.2',
+            allowedTransitions: ['RENEWING', 'RELEASED', 'EXPIRED', 'DECLINED', 'INIT']
+        },
+        RENEWING: {
+            id: 'RENEWING',
+            name: 'RENEWING',
+            label: 'Renewing (T1 Timer)',
+            color: '#8b5cf6', // Violet
+            accentColor: '#a78bfa',
+            icon: 'refresh-cw',
+            description: 'T1 timer (50% lease) expired. Unicasting DHCPREQUEST to renew lease.',
+            rfcSection: 'RFC 2131 Section 4.4.5',
+            allowedTransitions: ['BOUND', 'REBINDING', 'INIT']
+        },
+        REBINDING: {
+            id: 'REBINDING',
+            name: 'REBINDING',
+            label: 'Rebinding (T2 Timer)',
+            color: '#e11d48', // Rose / Bright Red-Pink
+            accentColor: '#fb7185',
+            icon: 'alert-triangle',
+            description: 'T2 timer (87.5% lease) expired. Broadcasting DHCPREQUEST to any server.',
+            rfcSection: 'RFC 2131 Section 4.4.5',
+            allowedTransitions: ['BOUND', 'EXPIRED', 'INIT']
+        },
+        RELEASED: {
+            id: 'RELEASED',
+            name: 'RELEASED',
+            label: 'Released',
+            color: '#475569', // Gray
+            accentColor: '#64748b',
+            icon: 'unlock',
+            description: 'Sent DHCPRELEASE. IP voluntarily surrendered back to pool.',
+            rfcSection: 'RFC 2131 Section 4.4.6',
+            allowedTransitions: ['INIT', 'SELECTING']
+        },
+        EXPIRED: {
+            id: 'EXPIRED',
+            name: 'EXPIRED',
+            label: 'Lease Expired',
+            color: '#dc2626', // Red
+            accentColor: '#f87171',
+            icon: 'clock',
+            description: 'Lease duration elapsed without renewal ACK. Network access revoked.',
+            rfcSection: 'RFC 2131 Section 4.4.5',
+            allowedTransitions: ['INIT', 'SELECTING']
+        },
+        DECLINED: {
+            id: 'DECLINED',
+            name: 'DECLINED',
+            label: 'Address Conflict (Declined)',
+            color: '#b91c1c', // Dark Red
+            accentColor: '#ef4444',
+            icon: 'slash',
+            description: 'Address collision detected via ARP probe. Sent DHCPDECLINE to quarantine IP.',
+            rfcSection: 'RFC 2131 Section 4.4.1',
+            allowedTransitions: ['INIT', 'SELECTING']
+        }
+    };
+
+    /**
+     * Transition Matrix & Event Triggers
+     */
+    const TRANSITIONS = [
+        // INIT transitions
+        { from: 'INIT', to: 'SELECTING', event: 'SEND_DISCOVER', desc: 'Client powers on / requests IP; sends DHCPDISCOVER' },
+        { from: 'INIT', to: 'BOUND', event: 'MANUAL_STATIC_ASSIGN', desc: 'Manual static IP configured' },
+
+        // SELECTING transitions
+        { from: 'SELECTING', to: 'REQUESTING', event: 'RECEIVE_OFFER', desc: 'Received DHCPOFFER from server; sends DHCPREQUEST' },
+        { from: 'SELECTING', to: 'INIT', event: 'TIMEOUT_NO_OFFER', desc: 'No offers received; backoff retry' },
+
+        // REQUESTING transitions
+        { from: 'REQUESTING', to: 'BOUND', event: 'RECEIVE_ACK', desc: 'Received DHCPACK; ARP probe verified clean IP' },
+        { from: 'REQUESTING', to: 'DECLINED', event: 'CONFLICT_DETECTED', desc: 'ARP probe detected duplicate IP! Sent DHCPDECLINE' },
+        { from: 'REQUESTING', to: 'INIT', event: 'RECEIVE_NAK', desc: 'Received DHCPNAK; server refused allocation' },
+        { from: 'REQUESTING', to: 'SELECTING', event: 'REQUEST_TIMEOUT', desc: 'Request timed out; re-discovering' },
+
+        // BOUND transitions
+        { from: 'BOUND', to: 'RENEWING', event: 'TIMER_T1_EXPIRED', desc: 'T1 timer (50%) expired; unicasting DHCPREQUEST' },
+        { from: 'BOUND', to: 'RELEASED', event: 'SEND_RELEASE', desc: 'Client gracefully released lease; sends DHCPRELEASE' },
+        { from: 'BOUND', to: 'INIT', event: 'DISCONNECT', desc: 'Client interface disconnected' },
+        { from: 'BOUND', to: 'DECLINED', event: 'ARP_COLLISION_LATE', desc: 'Conflicting ARP packet seen on wire' },
+
+        // RENEWING transitions
+        { from: 'RENEWING', to: 'BOUND', event: 'RENEW_ACK_RECEIVED', desc: 'Server ACKed renewal; lease reset to 100%' },
+        { from: 'RENEWING', to: 'REBINDING', event: 'TIMER_T2_EXPIRED', desc: 'T1 renewal failed; T2 (87.5%) reached, broadcasting to all servers' },
+        { from: 'RENEWING', to: 'INIT', event: 'RENEW_NAK_RECEIVED', desc: 'Server NAKed renewal request' },
+
+        // REBINDING transitions
+        { from: 'REBINDING', to: 'BOUND', event: 'REBIND_ACK_RECEIVED', desc: 'Secondary or primary server ACKed rebinding' },
+        { from: 'REBINDING', to: 'EXPIRED', event: 'LEASE_EXPIRED', desc: '100% lease duration elapsed without ACK' },
+        { from: 'REBINDING', to: 'INIT', event: 'REBIND_NAK_RECEIVED', desc: 'Server sent NAK during rebinding' },
+
+        // TERMINAL / RESET transitions
+        { from: 'RELEASED', to: 'INIT', event: 'RESET', desc: 'Ready for new address cycle' },
+        { from: 'EXPIRED', to: 'INIT', event: 'RESET', desc: 'Ready for new address cycle' },
+        { from: 'DECLINED', to: 'INIT', event: 'BACKOFF_COMPLETE', desc: 'Backoff timer elapsed, returning to INIT' }
+    ];
+
+    /**
+     * Finite-State Machine Instance for a Client Device
+     */
+    class FiniteStateMachine {
+        constructor(clientId, initialState = 'INIT', onStateChange = null) {
+            this.clientId = clientId;
+            this.currentState = initialState;
+            this.previousState = null;
+            this.stateEnteredAt = Date.now();
+            this.onStateChange = onStateChange;
+
+            this.history = [{
+                from: null,
+                to: initialState,
+                event: 'INITIALIZE',
+                timestamp: this.stateEnteredAt,
+                simTime: 0,
+                details: 'FSM initialized in ' + initialState
+            }];
+        }
+
+        getState() {
+            return this.currentState;
+        }
+
+        getStateMeta() {
+            return LEASE_STATES[this.currentState] || LEASE_STATES.INIT;
+        }
+
+        isBound() {
+            return this.currentState === 'BOUND' || this.currentState === 'RENEWING' || this.currentState === 'REBINDING';
+        }
+
+        canTransition(toState) {
+            const currentDef = LEASE_STATES[this.currentState];
+            return currentDef && currentDef.allowedTransitions.includes(toState);
+        }
+
+        transition(toState, event = 'MANUAL_TRIGGER', details = '', simTime = 0) {
+            if (!LEASE_STATES[toState]) {
+                throw new Error(`Unknown target state: ${toState}`);
+            }
+
+            const fromState = this.currentState;
+            const now = Date.now();
+
+            this.previousState = fromState;
+            this.currentState = toState;
+            this.stateEnteredAt = now;
+
+            const record = {
+                from: fromState,
+                to: toState,
+                event: event,
+                timestamp: now,
+                simTime: simTime,
+                details: details || `Transition from ${fromState} to ${toState} via ${event}`
+            };
+
+            this.history.push(record);
+            if (this.history.length > 50) {
+                this.history.shift();
+            }
+
+            if (typeof this.onStateChange === 'function') {
+                this.onStateChange(this.clientId, fromState, toState, record);
+            }
+
+            return record;
+        }
+
+        reset(simTime = 0) {
+            return this.transition('INIT', 'RESET', 'Manual FSM reset to initial state', simTime);
+        }
+    }
+
+    return {
+        LEASE_STATES,
+        TRANSITIONS,
+        FiniteStateMachine
+    };
+}));
+
+
+/* --- File: src/js/dhcp-server.js --- */
+/**
+ * Network Address Allocation and DHCP Lease Simulation System
+ * DHCP Server Simulation Engine
+ * 
+ * Manages RFC 2131 IP address pools, lease allocations, static reservations,
+ * T1/T2 timer calculations, conflict quarantines, and packet message handlers.
+ */
+
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define(['./regex-validator', './packet'], factory);
+    } else if (typeof module === 'object' && module.exports) {
+        module.exports = factory(require('./regex-validator'), require('./packet'));
+    } else {
+        root.DhcpServer = factory(root.RegexValidator, root.DhcpPacket);
+    }
+}(typeof self !== 'undefined' ? self : this, function (RegexValidator, DhcpPacket) {
+
+    const { PacketFactory } = DhcpPacket;
+
+    class DhcpServer {
+        constructor(config = {}) {
+            this.id = config.id || 'dhcp-server-primary';
+            this.name = config.name || 'Primary DHCP Server';
+            this.mac = config.mac || '00:50:56:C0:00:01';
+            this.ip = config.ip || '192.168.1.1';
+            this.subnetMask = config.subnetMask || '255.255.255.0';
+            this.gateway = config.gateway || '192.168.1.1';
+            this.dns = config.dns || '8.8.8.8';
+            this.domainName = config.domainName || 'local.lan';
+            this.isRogue = !!config.isRogue;
+            this.isEnabled = config.isEnabled !== false;
+
+            // Address Pool Configuration
+            this.poolStart = config.poolStart || '192.168.1.100';
+            this.poolEnd = config.poolEnd || '192.168.1.150';
+            this.defaultLeaseDuration = config.defaultLeaseDuration || 120; // seconds
+            this.offerTimeoutSecs = config.offerTimeoutSecs || 15; // pending offer expiry
+            this.allocationStrategy = config.allocationStrategy || 'SEQUENTIAL'; // SEQUENTIAL, RANDOM, LRU
+
+            // Internal State Tables
+            this.addressPool = new Map(); // ip -> { ip, status, clientMac, clientHost, offeredAt, leasedAt, expiresAt, xid, conflictReason }
+            this.staticReservations = new Map(); // mac -> ip
+            this.conflictQuarantine = new Map(); // ip -> { ip, mac, reason, quarantinedAt }
+            this.activeLeaseCount = 0;
+
+            // Statistics Counters
+            this.stats = {
+                discoversReceived: 0,
+                offersSent: 0,
+                requestsReceived: 0,
+                acksSent: 0,
+                naksSent: 0,
+                declinesReceived: 0,
+                releasesReceived: 0,
+                poolExhaustionEvents: 0,
+                conflictsDetected: 0
+            };
+
+            this.eventListeners = [];
+
+            // Initialize Pool
+            this.rebuildAddressPool();
+        }
+
+        onEvent(callback) {
+            this.eventListeners.push(callback);
+        }
+
+        emitEvent(type, data) {
+            const eventObj = {
+                type,
+                serverId: this.id,
+                serverName: this.name,
+                isRogue: this.isRogue,
+                timestamp: Date.now(),
+                ...data
+            };
+            this.eventListeners.forEach(cb => {
+                try { cb(eventObj); } catch (e) { console.error('DHCP Server event error', e); }
+            });
+        }
+
+        /**
+         * Initializes or reconfigures the IP address pool based on start and end IPs
+         */
+        rebuildAddressPool() {
+            const startInt = RegexValidator.ipToInt(this.poolStart);
+            const endInt = RegexValidator.ipToInt(this.poolEnd);
+
+            if (startInt === null || endInt === null || startInt > endInt) {
+                console.error('Invalid IP range for DHCP pool:', this.poolStart, this.poolEnd);
+                return;
+            }
+
+            const currentLeases = new Map(this.addressPool);
+            this.addressPool.clear();
+
+            for (let i = startInt; i <= endInt; i++) {
+                const ipStr = RegexValidator.intToIp(i);
+                const existing = currentLeases.get(ipStr);
+
+                if (existing && (existing.status === 'BOUND' || existing.status === 'CONFLICTED')) {
+                    this.addressPool.set(ipStr, existing);
+                } else {
+                    this.addressPool.set(ipStr, {
+                        ip: ipStr,
+                        intVal: i,
+                        status: 'AVAILABLE', // AVAILABLE, OFFERED, BOUND, CONFLICTED, EXPIRED, STATIC
+                        clientMac: null,
+                        clientHost: null,
+                        offeredAt: 0,
+                        leasedAt: 0,
+                        expiresAt: 0,
+                        t1At: 0,
+                        t2At: 0,
+                        xid: null,
+                        conflictReason: null
+                    });
+                }
+            }
+
+            this.updatePoolStatistics();
+        }
+
+        updatePoolStatistics() {
+            let active = 0;
+            let offered = 0;
+            let conflicted = 0;
+            let available = 0;
+
+            for (const entry of this.addressPool.values()) {
+                if (entry.status === 'BOUND') active++;
+                else if (entry.status === 'OFFERED') offered++;
+                else if (entry.status === 'CONFLICTED') conflicted++;
+                else available++;
+            }
+
+            this.activeLeaseCount = active;
+            return {
+                total: this.addressPool.size,
+                active,
+                offered,
+                conflicted,
+                available,
+                utilizationPercent: this.addressPool.size > 0 ? Math.round((active / this.addressPool.size) * 100) : 0
+            };
+        }
+
+        getPoolEntries() {
+            return Array.from(this.addressPool.values());
+        }
+
+        /**
+         * Add a static IP reservation for a MAC
+         */
+        addStaticReservation(mac, ip) {
+            const normMac = RegexValidator.normalizeMac(mac);
+            if (!normMac || !RegexValidator.validateIpv4(ip)) {
+                return { success: false, error: 'Invalid MAC or IP format' };
+            }
+
+            this.staticReservations.set(normMac, ip);
+            if (this.addressPool.has(ip)) {
+                const entry = this.addressPool.get(ip);
+                entry.status = 'STATIC';
+                entry.clientMac = normMac;
+            }
+            this.emitEvent('STATIC_RESERVATION_ADDED', { mac: normMac, ip });
+            return { success: true };
+        }
+
+        removeStaticReservation(mac) {
+            const normMac = RegexValidator.normalizeMac(mac);
+            if (this.staticReservations.has(normMac)) {
+                const ip = this.staticReservations.get(normMac);
+                this.staticReservations.delete(normMac);
+                if (this.addressPool.has(ip)) {
+                    const entry = this.addressPool.get(ip);
+                    if (entry.status === 'STATIC') {
+                        entry.status = 'AVAILABLE';
+                        entry.clientMac = null;
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
+
+        /**
+         * Finds next suitable IP address according to allocation strategy
+         */
+        findAvailableIp(clientMac) {
+            // 1. Check if MAC has a static reservation
+            if (this.staticReservations.has(clientMac)) {
+                const reservedIp = this.staticReservations.get(clientMac);
+                const entry = this.addressPool.get(reservedIp);
+                if (entry && (entry.status === 'AVAILABLE' || entry.status === 'OFFERED' || entry.status === 'STATIC' || entry.clientMac === clientMac)) {
+                    return reservedIp;
+                }
+            }
+
+            // 2. Check if client previously had a lease that can be restored
+            for (const [ip, entry] of this.addressPool.entries()) {
+                if (entry.clientMac === clientMac && (entry.status === 'AVAILABLE' || entry.status === 'EXPIRED')) {
+                    return ip;
+                }
+            }
+
+            // 3. Pool allocation according to strategy
+            const availableIps = [];
+            for (const [ip, entry] of this.addressPool.entries()) {
+                if (entry.status === 'AVAILABLE' || entry.status === 'EXPIRED') {
+                    // Make sure it's not reserved for another MAC
+                    const reservedFor = Array.from(this.staticReservations.entries()).find(([m, resIp]) => resIp === ip);
+                    if (!reservedFor || reservedFor[0] === clientMac) {
+                        availableIps.push(ip);
+                    }
+                }
+            }
+
+            if (availableIps.length === 0) {
+                return null; // Pool Exhaustion!
+            }
+
+            if (this.allocationStrategy === 'RANDOM') {
+                const idx = Math.floor(Math.random() * availableIps.length);
+                return availableIps[idx];
+            } else if (this.allocationStrategy === 'LRU') {
+                availableIps.sort((a, b) => (this.addressPool.get(a).leasedAt || 0) - (this.addressPool.get(b).leasedAt || 0));
+                return availableIps[0];
+            } else {
+                // SEQUENTIAL (default)
+                availableIps.sort((a, b) => RegexValidator.ipToInt(a) - RegexValidator.ipToInt(b));
+                return availableIps[0];
+            }
+        }
+
+        /**
+         * Message Handler: Process DHCPDISCOVER packet
+         */
+        handleDiscover(packet, simTime = 0) {
+            if (!this.isEnabled) return null;
+            this.stats.discoversReceived++;
+
+            const clientMac = packet.chaddr;
+            const clientHost = packet.options[12] ? packet.options[12].value : packet.senderName;
+            const requestedIp = packet.options[50] ? packet.options[50].value : null;
+
+            this.emitEvent('DISCOVER_RECEIVED', {
+                clientMac,
+                clientHost,
+                xid: packet.xid,
+                requestedIp
+            });
+
+            // Find an IP to offer
+            let offeredIp = null;
+            if (requestedIp && this.addressPool.has(requestedIp)) {
+                const entry = this.addressPool.get(requestedIp);
+                if (entry.status === 'AVAILABLE' || (entry.clientMac === clientMac && entry.status !== 'CONFLICTED')) {
+                    offeredIp = requestedIp;
+                }
+            }
+
+            if (!offeredIp) {
+                offeredIp = this.findAvailableIp(clientMac);
+            }
+
+            if (!offeredIp) {
+                // POOL EXHAUSTION!
+                this.stats.poolExhaustionEvents++;
+                this.emitEvent('POOL_EXHAUSTION', {
+                    clientMac,
+                    clientHost,
+                    xid: packet.xid,
+                    message: `Address pool exhausted! No available IPs between ${this.poolStart} and ${this.poolEnd}`
+                });
+                return null; // Server remains silent or drops DISCOVER as per RFC 2131
+            }
+
+            // Reserve IP temporarily as OFFERED
+            const poolEntry = this.addressPool.get(offeredIp);
+            poolEntry.status = 'OFFERED';
+            poolEntry.clientMac = clientMac;
+            poolEntry.clientHost = clientHost;
+            poolEntry.offeredAt = simTime;
+            poolEntry.xid = packet.xid;
+
+            this.stats.offersSent++;
+            const offerPacket = PacketFactory.createOffer(this, packet, offeredIp, this.defaultLeaseDuration);
+
+            this.emitEvent('OFFER_SENT', {
+                clientMac,
+                clientHost,
+                offeredIp,
+                leaseDuration: this.defaultLeaseDuration,
+                xid: packet.xid
+            });
+
+            return offerPacket;
+        }
+
+        /**
+         * Message Handler: Process DHCPREQUEST packet
+         */
+        handleRequest(packet, simTime = 0) {
+            if (!this.isEnabled) return null;
+            this.stats.requestsReceived++;
+
+            const clientMac = packet.chaddr;
+            const clientHost = packet.options[12] ? packet.options[12].value : packet.senderName;
+            const serverIdOption = packet.options[54] ? packet.options[54].value : null;
+            const requestedIp = packet.options[50] ? packet.options[50].value : packet.ciaddr;
+
+            // If client targeted a different DHCP Server (e.g. Rogue or Secondary server race),
+            // free any tentative offer this server made
+            if (serverIdOption && serverIdOption !== this.ip) {
+                this.releaseOfferedReservation(clientMac);
+                this.emitEvent('OFFER_WITHDRAWN', {
+                    clientMac,
+                    selectedServer: serverIdOption,
+                    reason: 'Client selected different DHCP server'
+                });
+                return null;
+            }
+
+            // Validate requested IP
+            if (!requestedIp || !RegexValidator.validateIpv4(requestedIp)) {
+                this.stats.naksSent++;
+                const nakPacket = PacketFactory.createNak(this, packet, 'Malformed or missing requested IP');
+                this.emitEvent('NAK_SENT', { clientMac, reason: 'Invalid IP format' });
+                return nakPacket;
+            }
+
+            // Check if requested IP belongs to this subnet
+            if (!RegexValidator.isIpInSubnet(requestedIp, this.ip, this.subnetMask)) {
+                this.stats.naksSent++;
+                const nakPacket = PacketFactory.createNak(this, packet, `Requested IP ${requestedIp} is not in server subnet`);
+                this.emitEvent('NAK_SENT', { clientMac, requestedIp, reason: 'Subnet mismatch' });
+                return nakPacket;
+            }
+
+            const poolEntry = this.addressPool.get(requestedIp);
+
+            // If IP does not exist in pool or is already leased to ANOTHER client
+            if (!poolEntry || (poolEntry.status === 'BOUND' && poolEntry.clientMac !== clientMac)) {
+                this.stats.naksSent++;
+                const nakPacket = PacketFactory.createNak(this, packet, `IP ${requestedIp} is already leased or unavailable`);
+                this.emitEvent('NAK_SENT', { clientMac, requestedIp, reason: 'Address already leased to another client' });
+                return nakPacket;
+            }
+
+            // If IP is quarantined due to conflict
+            if (poolEntry.status === 'CONFLICTED') {
+                this.stats.naksSent++;
+                const nakPacket = PacketFactory.createNak(this, packet, `IP ${requestedIp} is quarantined due to address collision`);
+                this.emitEvent('NAK_SENT', { clientMac, requestedIp, reason: 'Address marked conflicted' });
+                return nakPacket;
+            }
+
+            // Commit the Lease!
+            const leaseSecs = this.defaultLeaseDuration;
+            poolEntry.status = 'BOUND';
+            poolEntry.clientMac = clientMac;
+            poolEntry.clientHost = clientHost;
+            poolEntry.leasedAt = simTime;
+            poolEntry.expiresAt = simTime + leaseSecs;
+            poolEntry.t1At = simTime + Math.floor(leaseSecs * 0.5);
+            poolEntry.t2At = simTime + Math.floor(leaseSecs * 0.875);
+            poolEntry.xid = packet.xid;
+
+            this.stats.acksSent++;
+            const ackPacket = PacketFactory.createAck(this, packet, leaseSecs);
+
+            this.emitEvent('ACK_SENT', {
+                clientMac,
+                clientHost,
+                leasedIp: requestedIp,
+                leaseSecs,
+                expiresAt: poolEntry.expiresAt,
+                t1At: poolEntry.t1At,
+                t2At: poolEntry.t2At,
+                xid: packet.xid
+            });
+
+            this.updatePoolStatistics();
+            return ackPacket;
+        }
+
+        /**
+         * Message Handler: Process DHCPDECLINE packet (Address Conflict)
+         */
+        handleDecline(packet, simTime = 0) {
+            this.stats.declinesReceived++;
+            this.stats.conflictsDetected++;
+
+            const declinedIp = packet.options[50] ? packet.options[50].value : packet.ciaddr;
+            const reason = packet.options[56] ? packet.options[56].value : 'ARP collision detected by client';
+
+            if (declinedIp && this.addressPool.has(declinedIp)) {
+                const entry = this.addressPool.get(declinedIp);
+                entry.status = 'CONFLICTED';
+                entry.conflictReason = reason;
+                entry.quarantinedAt = simTime;
+
+                this.conflictQuarantine.set(declinedIp, {
+                    ip: declinedIp,
+                    mac: packet.chaddr,
+                    reason,
+                    quarantinedAt: simTime
+                });
+
+                this.emitEvent('DECLINE_RECEIVED', {
+                    declinedIp,
+                    clientMac: packet.chaddr,
+                    reason,
+                    quarantined: true
+                });
+
+                this.updatePoolStatistics();
+            }
+        }
+
+        /**
+         * Message Handler: Process DHCPRELEASE packet (Graceful Lease Surrender)
+         */
+        handleRelease(packet, simTime = 0) {
+            this.stats.releasesReceived++;
+
+            const releasingIp = packet.ciaddr;
+            const clientMac = packet.chaddr;
+
+            if (releasingIp && this.addressPool.has(releasingIp)) {
+                const entry = this.addressPool.get(releasingIp);
+                if (entry.clientMac === clientMac) {
+                    entry.status = 'AVAILABLE';
+                    entry.clientMac = null;
+                    entry.clientHost = null;
+                    entry.leasedAt = 0;
+                    entry.expiresAt = 0;
+
+                    this.emitEvent('RELEASE_RECEIVED', {
+                        releasingIp,
+                        clientMac,
+                        status: 'Returned to available pool'
+                    });
+
+                    this.updatePoolStatistics();
+                }
+            }
+        }
+
+        /**
+         * Withdraws any temporary offer held by a MAC
+         */
+        releaseOfferedReservation(clientMac) {
+            for (const entry of this.addressPool.values()) {
+                if (entry.clientMac === clientMac && entry.status === 'OFFERED') {
+                    entry.status = 'AVAILABLE';
+                    entry.clientMac = null;
+                    entry.clientHost = null;
+                }
+            }
+        }
+
+        /**
+         * Simulation Tick: Garbage collection of expired leases & stale offers
+         */
+        tick(simTime) {
+            let changed = false;
+
+            for (const entry of this.addressPool.values()) {
+                // Check if leased IP has expired
+                if (entry.status === 'BOUND' && simTime >= entry.expiresAt) {
+                    entry.status = 'EXPIRED';
+                    this.emitEvent('LEASE_EXPIRED_SERVER', {
+                        ip: entry.ip,
+                        clientMac: entry.clientMac,
+                        clientHost: entry.clientHost,
+                        expiredAt: simTime
+                    });
+                    // Reclaim back to available
+                    entry.status = 'AVAILABLE';
+                    entry.clientMac = null;
+                    entry.clientHost = null;
+                    changed = true;
+                }
+
+                // Check stale offered reservation timeout
+                if (entry.status === 'OFFERED' && (simTime - entry.offeredAt) > this.offerTimeoutSecs) {
+                    entry.status = 'AVAILABLE';
+                    entry.clientMac = null;
+                    entry.clientHost = null;
+                    changed = true;
+                }
+            }
+
+            if (changed) {
+                this.updatePoolStatistics();
+            }
+        }
+
+        /**
+         * Clear an IP from quarantine
+         */
+        clearQuarantine(ip) {
+            if (this.addressPool.has(ip)) {
+                const entry = this.addressPool.get(ip);
+                if (entry.status === 'CONFLICTED') {
+                    entry.status = 'AVAILABLE';
+                    entry.conflictReason = null;
+                    this.conflictQuarantine.delete(ip);
+                    this.emitEvent('QUARANTINE_CLEARED', { ip });
+                    this.updatePoolStatistics();
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /**
+         * Inject a manual conflict on an IP
+         */
+        injectConflict(ip, reason = 'Manual Administrator Conflict Injection') {
+            if (this.addressPool.has(ip)) {
+                const entry = this.addressPool.get(ip);
+                entry.status = 'CONFLICTED';
+                entry.conflictReason = reason;
+                this.conflictQuarantine.set(ip, { ip, reason, quarantinedAt: Date.now() });
+                this.emitEvent('CONFLICT_INJECTED', { ip, reason });
+                this.updatePoolStatistics();
+                return true;
+            }
+            return false;
+        }
+    }
+
+    return DhcpServer;
+}));
+
+
+/* --- File: src/js/client.js --- */
+/**
+ * Network Address Allocation and DHCP Lease Simulation System
+ * DHCP Client Device Model
+ * 
+ * Simulates a client device running the DHCP finite-state machine,
+ * network configuration, lease timers (T1, T2, T3), ARP probe conflict detection,
+ * and message handling.
+ */
+
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define(['./regex-validator', './packet', './fsm'], factory);
+    } else if (typeof module === 'object' && module.exports) {
+        module.exports = factory(require('./regex-validator'), require('./packet'), require('./fsm'));
+    } else {
+        root.DhcpClient = factory(root.RegexValidator, root.DhcpPacket, root.DhcpFSM);
+    }
+}(typeof self !== 'undefined' ? self : this, function (RegexValidator, DhcpPacket, DhcpFSM) {
+
+    const { PacketFactory } = DhcpPacket;
+    const { FiniteStateMachine } = DhcpFSM;
+
+    let clientSequence = 1;
+
+    class DhcpClient {
+        constructor(config = {}) {
+            this.id = config.id || ('client-' + clientSequence++);
+            this.hostname = config.hostname || (`Host-${clientSequence}`);
+            this.mac = RegexValidator.normalizeMac(config.mac || this.generateRandomMac());
+            this.deviceType = config.deviceType || 'laptop'; // laptop, phone, workstation, iot, server, rogue
+            this.isRogue = !!config.isRogue;
+
+            // Network Stack Configuration (active when BOUND)
+            this.ip = '0.0.0.0';
+            this.subnetMask = '0.0.0.0';
+            this.gateway = '0.0.0.0';
+            this.dns = '0.0.0.0';
+            this.leasingServerIp = null;
+            this.leasingServerMac = null;
+
+            // Lease Timing Data
+            this.leaseDuration = 0;
+            this.leaseStartTime = 0;
+            this.leaseExpiresAt = 0;
+            this.t1Time = 0;
+            this.t2Time = 0;
+
+            // Active Protocol State
+            this.currentXid = null;
+            this.lastOfferPacket = null;
+            this.retransmitCount = 0;
+            this.backoffDelay = 0;
+
+            // Fault Injection & Simulation Flags
+            this.simulateConflictOnAck = !!config.simulateConflictOnAck;
+            this.ignoreT1Renewal = !!config.ignoreT1Renewal; // Used to demonstrate transition to T2 Rebinding
+            this.requestSpecificIp = config.requestSpecificIp || null;
+
+            // Event Callbacks
+            this.eventListeners = [];
+
+            // Initialize Finite-State Machine
+            this.fsm = new FiniteStateMachine(this.id, 'INIT', (cId, from, to, record) => {
+                this.emitEvent('STATE_CHANGED', { from, to, record });
+            });
+        }
+
+        generateRandomMac() {
+            const hex = '0123456789ABCDEF';
+            let mac = '02'; // Local unicast (LSB of first byte is 0, second bit is 1)
+            for (let i = 0; i < 5; i++) {
+                mac += ':' + hex[Math.floor(Math.random() * 16)] + hex[Math.floor(Math.random() * 16)];
+            }
+            return mac;
+        }
+
+        onEvent(callback) {
+            this.eventListeners.push(callback);
+        }
+
+        emitEvent(type, data) {
+            const eventObj = {
+                type,
+                clientId: this.id,
+                hostname: this.hostname,
+                mac: this.mac,
+                currentState: this.fsm.getState(),
+                timestamp: Date.now(),
+                ...data
+            };
+            this.eventListeners.forEach(cb => {
+                try { cb(eventObj); } catch (e) { console.error('DHCP Client event error', e); }
+            });
+        }
+
+        getState() {
+            return this.fsm.getState();
+        }
+
+        getStateMeta() {
+            return this.fsm.getStateMeta();
+        }
+
+        isBound() {
+            return this.fsm.isBound() && this.ip !== '0.0.0.0';
+        }
+
+        /**
+         * Calculate remaining lease metrics
+         */
+        getLeaseMetrics(simTime) {
+            if (!this.isBound() || this.leaseExpiresAt === 0) {
+                return {
+                    active: false,
+                    totalDuration: 0,
+                    remainingSecs: 0,
+                    progressPercent: 0,
+                    isPastT1: false,
+                    isPastT2: false
+                };
+            }
+
+            const remainingSecs = Math.max(0, this.leaseExpiresAt - simTime);
+            const elapsed = simTime - this.leaseStartTime;
+            const progressPercent = Math.min(100, Math.max(0, Math.round((elapsed / this.leaseDuration) * 100)));
+
+            return {
+                active: true,
+                totalDuration: this.leaseDuration,
+                remainingSecs,
+                elapsedSecs: elapsed,
+                progressPercent,
+                isPastT1: simTime >= this.t1Time,
+                isPastT2: simTime >= this.t2Time
+            };
+        }
+
+        /**
+         * Step 1: Client initiates DHCP acquisition (DHCPDISCOVER)
+         */
+        startAcquisition(simTime = 0) {
+            if (this.getState() !== 'INIT' && this.getState() !== 'RELEASED' && this.getState() !== 'EXPIRED' && this.getState() !== 'DECLINED') {
+                console.warn(`Client ${this.hostname} is already in state ${this.getState()}`);
+            }
+
+            this.fsm.transition('SELECTING', 'SEND_DISCOVER', 'Broadcasting DHCPDISCOVER to find DHCP servers', simTime);
+
+            const discoverPacket = PacketFactory.createDiscover(this, {
+                requestedIp: this.requestSpecificIp
+            });
+            this.currentXid = discoverPacket.xid;
+
+            this.emitEvent('DISCOVER_SENT', {
+                xid: this.currentXid,
+                requestedIp: this.requestSpecificIp
+            });
+
+            return discoverPacket;
+        }
+
+        /**
+         * Step 2: Client evaluates DHCPOFFER and sends DHCPREQUEST
+         */
+        handleOffer(offerPacket, simTime = 0) {
+            if (this.getState() !== 'SELECTING') {
+                return null; // Ignore offers if not in selecting state
+            }
+
+            // Verify transaction ID
+            if (offerPacket.xid !== this.currentXid) {
+                return null;
+            }
+
+            this.lastOfferPacket = offerPacket;
+            const offeredIp = offerPacket.yiaddr;
+            const serverId = offerPacket.options[54] ? offerPacket.options[54].value : offerPacket.srcIp;
+
+            this.fsm.transition('REQUESTING', 'RECEIVE_OFFER', `Accepted offer of ${offeredIp} from ${serverId}`, simTime);
+
+            // Create DHCPREQUEST
+            const requestPacket = PacketFactory.createRequest(this, offerPacket);
+
+            this.emitEvent('REQUEST_SENT', {
+                xid: this.currentXid,
+                requestedIp: offeredIp,
+                serverId
+            });
+
+            return requestPacket;
+        }
+
+        /**
+         * Step 3: Client handles DHCPACK
+         */
+        handleAck(ackPacket, simTime = 0) {
+            const currentState = this.getState();
+            if (currentState !== 'REQUESTING' && currentState !== 'RENEWING' && currentState !== 'REBINDING') {
+                return null;
+            }
+
+            // Check if simulated conflict was requested
+            if (this.simulateConflictOnAck) {
+                this.simulateConflictOnAck = false; // Reset trigger
+                return this.triggerConflictDecline(ackPacket.yiaddr || this.ip, ackPacket.srcIp, simTime);
+            }
+
+            // Configure network interface with offered parameters
+            this.ip = ackPacket.yiaddr || this.ip;
+            this.subnetMask = ackPacket.options[1] ? ackPacket.options[1].value : '255.255.255.0';
+            this.gateway = ackPacket.options[3] ? ackPacket.options[3].value : '192.168.1.1';
+            this.dns = ackPacket.options[6] ? ackPacket.options[6].value : '8.8.8.8';
+            this.leasingServerIp = ackPacket.options[54] ? ackPacket.options[54].value : ackPacket.srcIp;
+            this.leasingServerMac = ackPacket.srcMac;
+
+            // Compute lease timings
+            this.leaseDuration = ackPacket.options[51] ? parseInt(ackPacket.options[51].value, 10) : 120;
+            this.leaseStartTime = simTime;
+            this.leaseExpiresAt = simTime + this.leaseDuration;
+            this.t1Time = ackPacket.options[58] ? simTime + parseInt(ackPacket.options[58].value, 10) : simTime + Math.floor(this.leaseDuration * 0.5);
+            this.t2Time = ackPacket.options[59] ? simTime + parseInt(ackPacket.options[59].value, 10) : simTime + Math.floor(this.leaseDuration * 0.875);
+
+            const transitionEvent = currentState === 'RENEWING' ? 'RENEW_ACK_RECEIVED' :
+                                    currentState === 'REBINDING' ? 'REBIND_ACK_RECEIVED' : 'RECEIVE_ACK';
+
+            this.fsm.transition('BOUND', transitionEvent, `Lease committed for ${this.ip} (${this.leaseDuration}s)`, simTime);
+
+            this.emitEvent('BOUND_SUCCESS', {
+                ip: this.ip,
+                subnetMask: this.subnetMask,
+                gateway: this.gateway,
+                dns: this.dns,
+                leasingServerIp: this.leasingServerIp,
+                leaseDuration: this.leaseDuration,
+                expiresAt: this.leaseExpiresAt
+            });
+
+            return null;
+        }
+
+        /**
+         * Handle DHCPNAK (Rejection)
+         */
+        handleNak(nakPacket, simTime = 0) {
+            const reason = nakPacket.options[56] ? nakPacket.options[56].value : 'Server rejected lease request';
+
+            this.ip = '0.0.0.0';
+            this.leaseDuration = 0;
+            this.fsm.transition('INIT', 'RECEIVE_NAK', `Received DHCPNAK: ${reason}`, simTime);
+
+            this.emitEvent('NAK_RECEIVED', {
+                reason,
+                serverId: nakPacket.srcIp
+            });
+
+            return null;
+        }
+
+        /**
+         * Trigger ARP Probe Conflict & DHCPDECLINE
+         */
+        triggerConflictDecline(conflictedIp, serverIp, simTime = 0) {
+            this.fsm.transition('DECLINED', 'CONFLICT_DETECTED', `Address collision detected for ${conflictedIp} via ARP probe!`, simTime);
+
+            const declinePacket = PacketFactory.createDecline(this, conflictedIp, serverIp);
+            this.ip = '0.0.0.0';
+
+            this.emitEvent('CONFLICT_DECLINED', {
+                conflictedIp,
+                serverIp,
+                reason: 'Gratuitous ARP reply received from duplicate host'
+            });
+
+            return declinePacket;
+        }
+
+        /**
+         * Step 4: Graceful Release (DHCPRELEASE)
+         */
+        releaseLease(simTime = 0) {
+            if (!this.isBound()) return null;
+
+            const oldIp = this.ip;
+            const serverIp = this.leasingServerIp;
+
+            const releasePacket = PacketFactory.createRelease(this, serverIp);
+
+            this.fsm.transition('RELEASED', 'SEND_RELEASE', `Gracefully released IP ${oldIp}`, simTime);
+            this.ip = '0.0.0.0';
+            this.leaseDuration = 0;
+            this.leaseExpiresAt = 0;
+
+            this.emitEvent('LEASE_RELEASED', { oldIp, serverIp });
+
+            // Return to INIT after brief period
+            setTimeout(() => {
+                if (this.fsm.getState() === 'RELEASED') {
+                    this.fsm.transition('INIT', 'RESET', 'Ready for new discovery cycle', simTime);
+                }
+            }, 500);
+
+            return releasePacket;
+        }
+
+        /**
+         * Force manual T1 Renewal
+         */
+        renewLease(simTime = 0) {
+            if (!this.isBound()) return null;
+
+            this.fsm.transition('RENEWING', 'TIMER_T1_EXPIRED', `Unicasting renewal DHCPREQUEST to ${this.leasingServerIp}`, simTime);
+
+            const renewPacket = PacketFactory.createRequest(this, {
+                srcMac: this.leasingServerMac,
+                srcIp: this.leasingServerIp,
+                yiaddr: this.ip,
+                xid: this.currentXid || DhcpPacket.generateXid(),
+                options: { 54: { value: this.leasingServerIp } }
+            }, true, false);
+
+            this.emitEvent('RENEW_REQUEST_SENT', { ip: this.ip, serverIp: this.leasingServerIp });
+            return renewPacket;
+        }
+
+        /**
+         * Force manual Rebinding
+         */
+        rebindLease(simTime = 0) {
+            if (this.getState() !== 'BOUND' && this.getState() !== 'RENEWING') return null;
+
+            this.fsm.transition('REBINDING', 'TIMER_T2_EXPIRED', `Broadcasting rebinding DHCPREQUEST to all servers`, simTime);
+
+            const rebindPacket = PacketFactory.createRequest(this, {
+                srcMac: 'FF:FF:FF:FF:FF:FF',
+                srcIp: '255.255.255.255',
+                yiaddr: this.ip,
+                xid: this.currentXid || DhcpPacket.generateXid(),
+                options: {}
+            }, true, true);
+
+            this.emitEvent('REBIND_REQUEST_SENT', { ip: this.ip });
+            return rebindPacket;
+        }
+
+        /**
+         * Force immediate lease expiration
+         */
+        forceExpire(simTime = 0) {
+            if (!this.isBound()) return;
+
+            const oldIp = this.ip;
+            this.fsm.transition('EXPIRED', 'LEASE_EXPIRED', `Lease for ${oldIp} expired`, simTime);
+            this.ip = '0.0.0.0';
+            this.leaseDuration = 0;
+            this.leaseExpiresAt = 0;
+
+            this.emitEvent('LEASE_EXPIRED_CLIENT', { oldIp });
+
+            setTimeout(() => {
+                if (this.fsm.getState() === 'EXPIRED') {
+                    this.fsm.transition('INIT', 'RESET', 'Returning to unconfigured state', simTime);
+                }
+            }, 600);
+        }
+
+        /**
+         * Simulation Tick: Monitors T1, T2, and T3 timers
+         */
+        tick(simTime) {
+            const state = this.getState();
+
+            // 1. In BOUND state: check if T1 timer reached
+            if (state === 'BOUND') {
+                if (simTime >= this.t1Time) {
+                    if (this.ignoreT1Renewal) {
+                        // Demo mode: skip renewal to demonstrate T2 rebinding
+                        console.log(`[Demo] Client ${this.hostname} skipping T1 renewal to test T2 rebinding`);
+                    } else {
+                        return this.renewLease(simTime);
+                    }
+                }
+            }
+
+            // 2. In RENEWING (or BOUND if T1 skipped): check if T2 timer reached
+            if (state === 'RENEWING' || (state === 'BOUND' && simTime >= this.t2Time)) {
+                if (simTime >= this.t2Time) {
+                    return this.rebindLease(simTime);
+                }
+            }
+
+            // 3. In RENEWING or REBINDING: check if T3 (Lease Expiry) reached
+            if (state === 'BOUND' || state === 'RENEWING' || state === 'REBINDING') {
+                if (simTime >= this.leaseExpiresAt) {
+                    this.forceExpire(simTime);
+                }
+            }
+
+            return null;
+        }
+    }
+
+    return DhcpClient;
+}));
+
+
+/* --- File: src/js/simulation.js --- */
+/**
+ * Network Address Allocation and DHCP Lease Simulation System
+ * Core Simulation Coordinator Engine
+ * 
+ * Orchestrates virtual network topology, clock ticks, packet dispatching,
+ * message sequence logging, fault injections, and scenario execution.
+ */
+
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define(['./regex-validator', './packet', './fsm', './dhcp-server', './client'], factory);
+    } else if (typeof module === 'object' && module.exports) {
+        module.exports = factory(
+            require('./regex-validator'),
+            require('./packet'),
+            require('./fsm'),
+            require('./dhcp-server'),
+            require('./client')
+        );
+    } else {
+        root.DhcpSimulation = factory(
+            root.RegexValidator,
+            root.DhcpPacket,
+            root.DhcpFSM,
+            root.DhcpServer,
+            root.DhcpClient
+        );
+    }
+}(typeof self !== 'undefined' ? self : this, function (RegexValidator, DhcpPacket, DhcpFSM, DhcpServer, DhcpClient) {
+
+    const { Packet, PacketFactory } = DhcpPacket;
+
+    class SimulationCoordinator {
+        constructor(config = {}) {
+            // Virtual Clock & Running State
+            this.simTime = 0; // Simulation time in seconds
+            this.simSpeed = 1; // 1x, 2x, 5x, 10x, etc.
+            this.isRunning = false;
+            this.timerInterval = null;
+            this.tickRateMs = 1000; // 1 real second per sim tick at 1x
+
+            // Network Topology
+            this.server = new DhcpServer({
+                id: 'dhcp-server-01',
+                name: 'Core DHCP Server',
+                ip: '192.168.1.1',
+                mac: '00:1A:4A:10:20:01',
+                subnetMask: '255.255.255.0',
+                gateway: '192.168.1.1',
+                dns: '8.8.8.8',
+                poolStart: '192.168.1.100',
+                poolEnd: '192.168.1.130',
+                defaultLeaseDuration: 120 // 2 minutes for interactive testing
+            });
+
+            this.rogueServer = new DhcpServer({
+                id: 'dhcp-rogue-01',
+                name: 'Rogue DHCP Server',
+                ip: '10.0.0.1',
+                mac: 'DE:AD:BE:EF:00:01',
+                subnetMask: '255.255.0.0',
+                gateway: '10.0.0.1',
+                dns: '1.1.1.1',
+                poolStart: '10.0.0.50',
+                poolEnd: '10.0.0.99',
+                defaultLeaseDuration: 60,
+                isRogue: true,
+                isEnabled: false // Disabled by default
+            });
+
+            this.clients = new Map(); // id -> DhcpClient
+            this.packetHistory = []; // All transmitted packets for inspector & sequence diagram
+            this.eventLog = []; // System log messages
+            this.inFlightPackets = []; // Packets currently animating in transit
+
+            // Simulation options
+            this.packetDropRate = 0; // 0 to 1
+            this.packetLatencySecs = 0.4; // visual delay for animations
+
+            // Event Listeners
+            this.listeners = [];
+
+            // Wire up server events to system logger
+            this.bindServerEvents(this.server);
+            this.bindServerEvents(this.rogueServer);
+
+            // Populate initial default clients
+            this.initDefaultDevices();
+        }
+
+        bindServerEvents(server) {
+            server.onEvent(evt => {
+                let level = 'INFO';
+                if (evt.type === 'ACK_SENT') level = 'SUCCESS';
+                else if (evt.type === 'NAK_SENT' || evt.type === 'DECLINE_RECEIVED') level = 'ERROR';
+                else if (evt.type === 'POOL_EXHAUSTION' || evt.type === 'LEASE_EXPIRED_SERVER') level = 'WARN';
+
+                this.logEvent(level, `[${server.name}] ${evt.type}`, evt);
+            });
+        }
+
+        addListener(callback) {
+            this.listeners.push(callback);
+        }
+
+        emit(eventType, payload) {
+            const data = {
+                type: eventType,
+                simTime: this.simTime,
+                timestamp: Date.now(),
+                ...payload
+            };
+            this.listeners.forEach(cb => {
+                try { cb(data); } catch (e) { console.error('Sim coordinator event error', e); }
+            });
+        }
+
+        logEvent(level, title, details = {}) {
+            const entry = {
+                id: 'log-' + (this.eventLog.length + 1),
+                simTime: this.simTime,
+                timestamp: new Date().toLocaleTimeString(),
+                level, // INFO, SUCCESS, WARN, ERROR, PACKET, CONFLICT
+                title,
+                details
+            };
+            this.eventLog.unshift(entry);
+            if (this.eventLog.length > 500) this.eventLog.pop();
+            this.emit('LOG_ENTRY', { entry });
+        }
+
+        /**
+         * Setup initial demo devices
+         */
+        initDefaultDevices() {
+            this.addClient({
+                id: 'client-laptop-1',
+                hostname: 'Laptop-Alpha',
+                mac: '00:1E:67:98:2A:1B',
+                deviceType: 'laptop'
+            });
+
+            this.addClient({
+                id: 'client-phone-2',
+                hostname: 'iPhone-15',
+                mac: 'F0:18:98:4C:55:02',
+                deviceType: 'phone'
+            });
+
+            this.addClient({
+                id: 'client-workstation-3',
+                hostname: 'Workstation-Pro',
+                mac: '3C:D9:2B:11:80:A3',
+                deviceType: 'workstation'
+            });
+
+            this.addClient({
+                id: 'client-iot-4',
+                hostname: 'IoT-SmartSensor',
+                mac: 'B8:27:EB:44:9C:F4',
+                deviceType: 'iot'
+            });
+        }
+
+        /**
+         * Add a new client device with strict regex validation
+         */
+        addClient(clientConfig) {
+            // Regex Validate MAC
+            const macValidation = RegexValidator.verifyMacAddress(clientConfig.mac);
+            if (!macValidation.valid) {
+                this.logEvent('ERROR', `Failed to add device: ${macValidation.error}`);
+                return { success: false, error: macValidation.error };
+            }
+
+            // Regex Validate Hostname
+            if (!RegexValidator.validateHostname(clientConfig.hostname)) {
+                const err = `Invalid hostname '${clientConfig.hostname}'. Must comply with RFC 1123 (alphanumeric, hyphens allowed).`;
+                this.logEvent('ERROR', err);
+                return { success: false, error: err };
+            }
+
+            // Check duplicate MAC
+            const normalizedMac = macValidation.normalized;
+            for (const existing of this.clients.values()) {
+                if (existing.mac === normalizedMac) {
+                    const err = `Device with MAC ${normalizedMac} already exists (${existing.hostname})`;
+                    this.logEvent('ERROR', err);
+                    return { success: false, error: err };
+                }
+            }
+
+            const client = new DhcpClient({
+                ...clientConfig,
+                mac: normalizedMac
+            });
+
+            client.onEvent(evt => {
+                let level = 'INFO';
+                if (evt.type === 'BOUND_SUCCESS') level = 'SUCCESS';
+                else if (evt.type === 'CONFLICT_DECLINED' || evt.type === 'NAK_RECEIVED') level = 'ERROR';
+                else if (evt.type === 'LEASE_EXPIRED_CLIENT') level = 'WARN';
+
+                this.logEvent(level, `[${client.hostname}] ${evt.type}`, evt);
+                this.emit('CLIENT_UPDATED', { client });
+            });
+
+            this.clients.set(client.id, client);
+            this.logEvent('INFO', `New device connected: ${client.hostname} (${client.mac})`);
+            this.emit('CLIENT_ADDED', { client });
+            return { success: true, client };
+        }
+
+        removeClient(clientId) {
+            const client = this.clients.get(clientId);
+            if (client) {
+                if (client.isBound()) {
+                    this.triggerRelease(clientId);
+                }
+                this.clients.delete(clientId);
+                this.logEvent('INFO', `Device removed: ${client.hostname}`);
+                this.emit('CLIENT_REMOVED', { clientId });
+                return true;
+            }
+            return false;
+        }
+
+        getClient(clientId) {
+            return this.clients.get(clientId);
+        }
+
+        getAllClients() {
+            return Array.from(this.clients.values());
+        }
+
+        /**
+         * Packet Transmission Pipeline
+         */
+        transmitPacket(packet, onDelivered = null) {
+            packet.simTick = this.simTime;
+            this.packetHistory.unshift(packet);
+            if (this.packetHistory.length > 300) this.packetHistory.pop();
+
+            this.logEvent('PACKET', `[PACKET] ${packet.getTypeName()} (${packet.senderName} -> ${packet.targetName})`, {
+                xid: packet.xid,
+                src: `${packet.srcIp} (${packet.srcMac})`,
+                dst: `${packet.dstIp} (${packet.dstMac})`,
+                summary: packet.getSummary(),
+                packetId: packet.id
+            });
+
+            this.emit('PACKET_DISPATCHED', { packet });
+
+            // Simulate Network Wire Delivery Latency
+            const delayMs = Math.max(100, Math.floor((this.packetLatencySecs * 1000) / this.simSpeed));
+
+            setTimeout(() => {
+                this.deliverPacket(packet);
+                if (typeof onDelivered === 'function') {
+                    onDelivered(packet);
+                }
+            }, delayMs);
+        }
+
+        /**
+         * Packet Delivery Dispatcher
+         */
+        deliverPacket(packet) {
+            packet.status = 'delivered';
+            this.emit('PACKET_DELIVERED', { packet });
+
+            // 1. Packets from Client to Server
+            if (packet.senderRole === 'Client') {
+                if (packet.messageType === 1) { // DHCPDISCOVER
+                    // Deliver to Primary DHCP Server
+                    const offer1 = this.server.handleDiscover(packet, this.simTime);
+                    if (offer1) {
+                        this.transmitPacket(offer1);
+                    }
+
+                    // If Rogue Server is active, deliver to Rogue Server too (racing condition!)
+                    if (this.rogueServer.isEnabled) {
+                        setTimeout(() => {
+                            const offer2 = this.rogueServer.handleDiscover(packet, this.simTime);
+                            if (offer2) {
+                                this.transmitPacket(offer2);
+                            }
+                        }, 50);
+                    }
+                } else if (packet.messageType === 3) { // DHCPREQUEST
+                    const resp1 = this.server.handleRequest(packet, this.simTime);
+                    if (resp1) {
+                        this.transmitPacket(resp1);
+                    }
+
+                    if (this.rogueServer.isEnabled) {
+                        const resp2 = this.rogueServer.handleRequest(packet, this.simTime);
+                        if (resp2) {
+                            this.transmitPacket(resp2);
+                        }
+                    }
+                } else if (packet.messageType === 4) { // DHCPDECLINE
+                    this.server.handleDecline(packet, this.simTime);
+                    if (this.rogueServer.isEnabled) {
+                        this.rogueServer.handleDecline(packet, this.simTime);
+                    }
+                } else if (packet.messageType === 7) { // DHCPRELEASE
+                    this.server.handleRelease(packet, this.simTime);
+                    if (this.rogueServer.isEnabled) {
+                        this.rogueServer.handleRelease(packet, this.simTime);
+                    }
+                }
+            }
+            // 2. Packets from Server to Client
+            else if (packet.senderRole === 'Server' || packet.senderRole === 'RogueServer') {
+                const targetClient = Array.from(this.clients.values()).find(c => c.mac === packet.chaddr);
+                if (targetClient) {
+                    if (packet.messageType === 2) { // DHCPOFFER
+                        const reqPacket = targetClient.handleOffer(packet, this.simTime);
+                        if (reqPacket) {
+                            this.transmitPacket(reqPacket);
+                        }
+                    } else if (packet.messageType === 5) { // DHCPACK
+                        const declinePacket = targetClient.handleAck(packet, this.simTime);
+                        if (declinePacket) {
+                            // If conflict detected, client emits DHCPDECLINE
+                            this.transmitPacket(declinePacket);
+                        }
+                    } else if (packet.messageType === 6) { // DHCPNAK
+                        targetClient.handleNak(packet, this.simTime);
+                    }
+                }
+            }
+        }
+
+        /**
+         * Trigger DORA acquisition for a client
+         */
+        triggerAcquire(clientId) {
+            const client = this.clients.get(clientId);
+            if (!client) return;
+
+            const discoverPacket = client.startAcquisition(this.simTime);
+            if (discoverPacket) {
+                this.transmitPacket(discoverPacket);
+            }
+        }
+
+        /**
+         * Trigger renewal for a client
+         */
+        triggerRenew(clientId) {
+            const client = this.clients.get(clientId);
+            if (!client || !client.isBound()) return;
+
+            const renewPacket = client.renewLease(this.simTime);
+            if (renewPacket) {
+                this.transmitPacket(renewPacket);
+            }
+        }
+
+        /**
+         * Trigger release for a client
+         */
+        triggerRelease(clientId) {
+            const client = this.clients.get(clientId);
+            if (!client || !client.isBound()) return;
+
+            const releasePacket = client.releaseLease(this.simTime);
+            if (releasePacket) {
+                this.transmitPacket(releasePacket);
+            }
+        }
+
+        /**
+         * Trigger conflict scenario for a client
+         */
+        triggerClientConflict(clientId) {
+            const client = this.clients.get(clientId);
+            if (!client) return;
+
+            client.simulateConflictOnAck = true;
+            this.logEvent('WARN', `Configured ${client.hostname} to simulate ARP conflict upon ACK`);
+            
+            if (client.getState() === 'INIT') {
+                this.triggerAcquire(clientId);
+            } else if (client.isBound()) {
+                // If already bound, trigger late collision
+                const confIp = client.ip;
+                const serverIp = client.leasingServerIp;
+                const decline = client.triggerConflictDecline(confIp, serverIp, this.simTime);
+                if (decline) {
+                    this.transmitPacket(decline);
+                }
+            }
+        }
+
+        /**
+         * Start Simulation Clock
+         */
+        start() {
+            if (this.isRunning) return;
+            this.isRunning = true;
+            this.logEvent('INFO', `Simulation started at speed ${this.simSpeed}x`);
+
+            const tickIntervalMs = Math.max(50, Math.floor(1000 / this.simSpeed));
+            this.timerInterval = setInterval(() => {
+                this.tick();
+            }, tickIntervalMs);
+
+            this.emit('SIM_STARTED');
+        }
+
+        /**
+         * Pause Simulation Clock
+         */
+        pause() {
+            if (!this.isRunning) return;
+            this.isRunning = false;
+            if (this.timerInterval) {
+                clearInterval(this.timerInterval);
+                this.timerInterval = null;
+            }
+            this.logEvent('INFO', 'Simulation paused');
+            this.emit('SIM_PAUSED');
+        }
+
+        /**
+         * Set Simulation Speed
+         */
+        setSpeed(multiplier) {
+            this.simSpeed = Math.max(0.2, Math.min(60, multiplier));
+            if (this.isRunning) {
+                this.pause();
+                this.start();
+            }
+            this.emit('SPEED_CHANGED', { speed: this.simSpeed });
+        }
+
+        /**
+         * Execute one simulation tick
+         */
+        tick() {
+            this.simTime += 1;
+
+            // Tick Server (Lease expiry, offer timeouts)
+            this.server.tick(this.simTime);
+            if (this.rogueServer.isEnabled) {
+                this.rogueServer.tick(this.simTime);
+            }
+
+            // Tick Clients (T1, T2, T3 timers)
+            for (const client of this.clients.values()) {
+                const autoPacket = client.tick(this.simTime);
+                if (autoPacket) {
+                    this.transmitPacket(autoPacket);
+                }
+            }
+
+            this.emit('SIM_TICK', { simTime: this.simTime });
+        }
+
+        /**
+         * Step single tick forward (manual stepping)
+         */
+        step() {
+            this.pause();
+            this.tick();
+        }
+
+        /**
+         * Reset simulation to initial state
+         */
+        reset() {
+            this.pause();
+            this.simTime = 0;
+            this.packetHistory = [];
+            this.eventLog = [];
+
+            // Reset Server
+            this.server.rebuildAddressPool();
+            this.rogueServer.rebuildAddressPool();
+            this.rogueServer.isEnabled = false;
+
+            // Reset Clients
+            for (const client of this.clients.values()) {
+                client.ip = '0.0.0.0';
+                client.leaseDuration = 0;
+                client.leaseExpiresAt = 0;
+                client.fsm.reset(0);
+            }
+
+            this.logEvent('INFO', 'Simulation reset to factory state');
+            this.emit('SIM_RESET');
+        }
+
+        /**
+         * Run Pre-configured Scenarios
+         */
+        runScenario(scenarioId) {
+            this.reset();
+            this.start();
+
+            if (scenarioId === 'dora-happy-path') {
+                this.logEvent('INFO', '=== Scenario: Standard 4-Step DORA Handshake ===');
+                const client = Array.from(this.clients.values())[0];
+                setTimeout(() => {
+                    this.triggerAcquire(client.id);
+                }, 400);
+            } else if (scenarioId === 'address-conflict') {
+                this.logEvent('WARN', '=== Scenario: Address Conflict & ARP Decline ===');
+                const client = Array.from(this.clients.values())[0];
+                client.simulateConflictOnAck = true;
+                setTimeout(() => {
+                    this.triggerAcquire(client.id);
+                }, 400);
+            } else if (scenarioId === 'pool-exhaustion') {
+                this.logEvent('WARN', '=== Scenario: Address Pool Exhaustion ===');
+                // Shrink server pool to 2 addresses
+                this.server.poolStart = '192.168.1.100';
+                this.server.poolEnd = '192.168.1.101';
+                this.server.rebuildAddressPool();
+
+                // Connect 4 clients rapidly
+                const allClients = Array.from(this.clients.values());
+                allClients.forEach((c, idx) => {
+                    setTimeout(() => {
+                        this.triggerAcquire(c.id);
+                    }, 300 + idx * 400);
+                });
+            } else if (scenarioId === 'lease-expiry-reclaim') {
+                this.logEvent('INFO', '=== Scenario: Short Lease Expiration & Reclaiming ===');
+                this.server.defaultLeaseDuration = 20; // 20 seconds short lease
+                this.setSpeed(2);
+                const client = Array.from(this.clients.values())[0];
+                client.ignoreT1Renewal = true; // Skip renewal to watch it expire
+                setTimeout(() => {
+                    this.triggerAcquire(client.id);
+                }, 400);
+            } else if (scenarioId === 'mid-lease-renewal') {
+                this.logEvent('INFO', '=== Scenario: Mid-Lease T1 Renewal Success ===');
+                this.server.defaultLeaseDuration = 30; // 30s
+                this.setSpeed(2);
+                const client = Array.from(this.clients.values())[0];
+                setTimeout(() => {
+                    this.triggerAcquire(client.id);
+                }, 400);
+            } else if (scenarioId === 'rogue-server-race') {
+                this.logEvent('WARN', '=== Scenario: Rogue DHCP Server Race Condition ===');
+                this.rogueServer.isEnabled = true;
+                const client = Array.from(this.clients.values())[0];
+                setTimeout(() => {
+                    this.triggerAcquire(client.id);
+                }, 400);
+            } else if (scenarioId === 'stress-multi-device') {
+                this.logEvent('INFO', '=== Scenario: Multi-Device Bulk Handshake ===');
+                const allClients = Array.from(this.clients.values());
+                allClients.forEach((c, idx) => {
+                    setTimeout(() => {
+                        this.triggerAcquire(c.id);
+                    }, idx * 500);
+                });
+            }
+        }
+    }
+
+    return SimulationCoordinator;
+}));
+
+
+/* --- File: src/js/ui/simple-ui.js --- */
+/**
+ * Network Address Allocation and DHCP Lease Simulation System
+ * Master UI Controller with Teacher Presentation Assistant & Auto-Syncing Regex Validator
+ */
+
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define(['../regex-validator', '../packet', '../fsm', '../simulation'], factory);
+    } else if (typeof module === 'object' && module.exports) {
+        module.exports = factory(
+            require('../regex-validator'),
+            require('../packet'),
+            require('../fsm'),
+            require('../simulation')
+        );
+    } else {
+        root.SimpleUI = factory(
+            root.RegexValidator,
+            root.DhcpPacket,
+            root.DhcpFSM,
+            root.DhcpSimulation
+        );
+    }
+}(typeof self !== 'undefined' ? self : this, function (RegexValidator, DhcpPacket, DhcpFSM, DhcpSimulation) {
+
+    // Teacher Presentation Scripts for Each Event
+    const TEACHER_GUIDES = {
+        DEFAULT: {
+            title: "EXPLANATION FOR MAM",
+            speech: "Mam, this web app simulates DHCP IP address allocation. Devices connect, go through the 4-step DORA handshake, follow an FSM state machine, and validate addresses with Regular Expressions."
+        },
+        DORA: {
+            title: "WHAT TO EXPLAIN FOR DORA HANDSHAKE",
+            speech: "Mam, this demonstrates the 4-step DORA handshake. The client broadcasts Discover ➔ the server offers an IP ➔ the client requests that IP ➔ the server sends ACK. The FSM moves from INIT ➔ DISCOVER ➔ OFFER ➔ BOUND."
+        },
+        RENEW: {
+            title: "WHAT TO EXPLAIN FOR T1 RENEWAL",
+            speech: "Mam, this demonstrates the T1 Lease Renewal at 50% of lease time. The client sends a unicast DHCPREQUEST directly to the server to extend its IP lease without disconnecting from the network."
+        },
+        CONFLICT: {
+            title: "WHAT TO EXPLAIN FOR ADDRESS CONFLICT",
+            speech: "Mam, this simulates an Address Collision. The client sends an ARP probe, detects that another device already has this IP, sends DHCPDECLINE, enters the DECLINED state, and the server quarantines the conflicted address."
+        },
+        RELEASE: {
+            title: "WHAT TO EXPLAIN FOR GRACEFUL RELEASE",
+            speech: "Mam, this demonstrates DHCPRELEASE. The device voluntarily surrenders its IP address back to the server's pool and returns to the unconfigured INIT state."
+        },
+        EXPIRED: {
+            title: "WHAT TO EXPLAIN FOR LEASE EXPIRY",
+            speech: "Mam, this demonstrates Lease Expiry. When the lease timer reaches 100% without an ACK, the client's network access is revoked, and the server reclaims the IP address into the available pool."
+        },
+        POOL_FULL: {
+            title: "WHAT TO EXPLAIN FOR ALLOCATION ERROR",
+            speech: "Mam, this demonstrates an Allocation Error (Pool Exhaustion). All IP addresses in the pool are already taken, so the server cannot allocate an address and rejects the request."
+        }
+    };
+
+    const FSM_EXPLANATIONS = {
+        INIT: {
+            title: "INIT (Offline)",
+            desc: "Device interface unconfigured (IP: 0.0.0.0). Ready for DHCP discovery.",
+            color: "#64748b"
+        },
+        SELECTING: {
+            title: "DISCOVER / SELECTING",
+            desc: "Sent DHCPDISCOVER broadcast to 255.255.255.255. Evaluating DHCPOFFERs.",
+            color: "#0284c7"
+        },
+        REQUESTING: {
+            title: "OFFER / REQUESTING",
+            desc: "Accepted server offer. Broadcasting DHCPREQUEST to claim IP address.",
+            color: "#eab308"
+        },
+        BOUND: {
+            title: "BOUND (Active Lease)",
+            desc: "Received DHCPACK! IP verified clean via ARP probe. Lease countdown active.",
+            color: "#22c55e"
+        },
+        RENEWING: {
+            title: "RENEWING (T1 - 50%)",
+            desc: "50% lease elapsed. Sending unicast DHCPREQUEST to extend lease duration.",
+            color: "#a855f7"
+        },
+        REBINDING: {
+            title: "REBINDING (T2 - 87.5%)",
+            desc: "Server didn't answer renewal. Broadcasting to all DHCP servers on network.",
+            color: "#f43f5e"
+        },
+        RELEASED: {
+            title: "RELEASED",
+            desc: "Client gracefully surrendered its IP address back to the server pool.",
+            color: "#64748b"
+        },
+        EXPIRED: {
+            title: "LEASE EXPIRED",
+            desc: "Lease time expired without renewal. IP returned to pool, connection cut.",
+            color: "#ef4444"
+        },
+        DECLINED: {
+            title: "CONFLICT / DECLINED",
+            desc: "ARP probe detected IP collision! Sent DHCPDECLINE to quarantine address.",
+            color: "#ef4444"
+        }
+    };
+
+    class SimpleUIController {
+        constructor() {
+            this.sim = new DhcpSimulation();
+            this.selectedClientId = 'client-laptop-1';
+            this.isUserManuallyEditingRegex = false;
+        }
+
+        init() {
+            this.bindTopControls();
+            this.bindDeviceTabs();
+            this.bindActionButtons();
+            this.bindRegexTester();
+            this.bindSimulationListeners();
+
+            // Set initial state
+            this.updateTeacherGuide('DEFAULT');
+            this.updateCurrentDeviceView();
+            this.renderPoolHeatmap();
+            this.renderMessageTimeline();
+            this.sim.start(); // Start clock running by default
+        }
+
+        updateTeacherGuide(key) {
+            const guide = TEACHER_GUIDES[key] || TEACHER_GUIDES.DEFAULT;
+            const titleEl = document.getElementById('guide-title');
+            const textEl = document.getElementById('guide-text');
+
+            if (titleEl) titleEl.innerText = guide.title;
+            if (textEl) textEl.innerText = `"${guide.speech}"`;
+        }
+
+        showAllocationError(message) {
+            const banner = document.getElementById('error-banner');
+            const msgEl = document.getElementById('error-msg');
+            if (banner && msgEl) {
+                msgEl.innerText = message || "Allocation Error: Address Pool Exhausted! No available IPs.";
+                banner.classList.add('show');
+                setTimeout(() => {
+                    banner.classList.remove('show');
+                }, 6000);
+            }
+        }
+
+        bindTopControls() {
+            // Play / Pause
+            const playBtn = document.getElementById('btn-play-toggle');
+            if (playBtn) {
+                playBtn.addEventListener('click', () => {
+                    if (this.sim.isRunning) {
+                        this.sim.pause();
+                        playBtn.innerText = '▶ Resume';
+                    } else {
+                        this.sim.start();
+                        playBtn.innerText = '⏸ Pause';
+                    }
+                });
+            }
+
+            // Speed
+            const speedSelect = document.getElementById('select-sim-speed');
+            if (speedSelect) {
+                speedSelect.addEventListener('change', (e) => {
+                    this.sim.setSpeed(parseFloat(e.target.value));
+                });
+            }
+
+            // Reset
+            const resetBtn = document.getElementById('btn-sim-reset');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => {
+                    this.sim.reset();
+                    this.sim.start();
+                    this.isUserManuallyEditingRegex = false;
+                    this.updateTeacherGuide('DEFAULT');
+                    this.renderMessageTimeline();
+                    this.renderPoolHeatmap();
+                    this.updateCurrentDeviceView();
+                });
+            }
+
+            // Scenario Buttons
+            const scenarioBtns = document.querySelectorAll('.btn-scenario');
+            scenarioBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    scenarioBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    const scenarioId = btn.getAttribute('data-scenario');
+
+                    this.isUserManuallyEditingRegex = false;
+
+                    if (scenarioId === 'dora-happy-path') {
+                        this.updateTeacherGuide('DORA');
+                    } else if (scenarioId === 'address-conflict') {
+                        this.updateTeacherGuide('CONFLICT');
+                    } else if (scenarioId === 'lease-expiry-reclaim') {
+                        this.updateTeacherGuide('EXPIRED');
+                    } else if (scenarioId === 'pool-exhaustion') {
+                        this.updateTeacherGuide('POOL_FULL');
+                        this.showAllocationError("Allocation Error: Address Pool Exhausted! All available IPs are taken.");
+                    }
+
+                    this.sim.runScenario(scenarioId);
+                    this.updateCurrentDeviceView();
+                });
+            });
+        }
+
+        bindDeviceTabs() {
+            const tabsContainer = document.getElementById('device-tabs-container');
+            if (!tabsContainer) return;
+
+            const clients = this.sim.getAllClients();
+            tabsContainer.innerHTML = clients.map((c) => `
+                <div class="device-tab ${c.id === this.selectedClientId ? 'active' : ''}" data-id="${c.id}">
+                    <span class="device-tab-status ${c.isBound() ? 'bound' : ''}"></span>
+                    <span>${c.hostname}</span>
+                </div>
+            `).join('');
+
+            tabsContainer.querySelectorAll('.device-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    this.selectedClientId = tab.getAttribute('data-id');
+                    this.isUserManuallyEditingRegex = false;
+                    tabsContainer.querySelectorAll('.device-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    this.updateCurrentDeviceView();
+                });
+            });
+        }
+
+        bindActionButtons() {
+            // Get IP (DORA)
+            const doraBtn = document.getElementById('btn-dora-action');
+            if (doraBtn) {
+                doraBtn.addEventListener('click', () => {
+                    this.isUserManuallyEditingRegex = false;
+                    this.updateTeacherGuide('DORA');
+                    this.sim.triggerAcquire(this.selectedClientId);
+                    this.updateCurrentDeviceView();
+                });
+            }
+
+            // Renew Lease
+            const renewBtn = document.getElementById('btn-renew-action');
+            if (renewBtn) {
+                renewBtn.addEventListener('click', () => {
+                    const client = this.sim.getClient(this.selectedClientId);
+                    if (client && client.isBound()) {
+                        this.updateTeacherGuide('RENEW');
+                        this.sim.triggerRenew(this.selectedClientId);
+                        this.updateCurrentDeviceView();
+                    } else {
+                        alert('Device is not bound to any IP yet. Click "Get IP (DORA)" first.');
+                    }
+                });
+            }
+
+            // Release Lease
+            const releaseBtn = document.getElementById('btn-release-action');
+            if (releaseBtn) {
+                releaseBtn.addEventListener('click', () => {
+                    const client = this.sim.getClient(this.selectedClientId);
+                    if (client && client.isBound()) {
+                        this.updateTeacherGuide('RELEASE');
+                        this.sim.triggerRelease(this.selectedClientId);
+                        this.updateCurrentDeviceView();
+                    }
+                });
+            }
+
+            // Simulate Conflict
+            const conflictBtn = document.getElementById('btn-conflict-action');
+            if (conflictBtn) {
+                conflictBtn.addEventListener('click', () => {
+                    this.updateTeacherGuide('CONFLICT');
+                    this.sim.triggerClientConflict(this.selectedClientId);
+                    this.updateCurrentDeviceView();
+                });
+            }
+        }
+
+        bindRegexTester() {
+            const input = document.getElementById('regex-quick-input');
+
+            if (input) {
+                input.addEventListener('input', () => {
+                    this.isUserManuallyEditingRegex = true;
+                    this.runRegexCheck(input.value.trim());
+                });
+
+                input.addEventListener('focus', () => {
+                    this.isUserManuallyEditingRegex = true;
+                });
+            }
+
+            // Quick Shortcut buttons in Card 5
+            const syncIpBtn = document.getElementById('btn-regex-sync-ip');
+            const syncMacBtn = document.getElementById('btn-regex-sync-mac');
+            const testBadIpBtn = document.getElementById('btn-regex-bad-ip');
+            const testBadMacBtn = document.getElementById('btn-regex-bad-mac');
+
+            if (syncIpBtn) {
+                syncIpBtn.addEventListener('click', () => {
+                    const client = this.sim.getClient(this.selectedClientId);
+                    const targetIp = (client && client.isBound()) ? client.ip : '192.168.1.100';
+                    this.setRegexInput(targetIp, `Current Allocated IP (${client ? client.hostname : ''})`);
+                });
+            }
+
+            if (syncMacBtn) {
+                syncMacBtn.addEventListener('click', () => {
+                    const client = this.sim.getClient(this.selectedClientId);
+                    const targetMac = client ? client.mac : '00:1E:67:98:2A:1B';
+                    this.setRegexInput(targetMac, `Hardware MAC (${client ? client.hostname : ''})`);
+                });
+            }
+
+            if (testBadIpBtn) {
+                testBadIpBtn.addEventListener('click', () => {
+                    this.setRegexInput('192.168.1.300', 'Invalid IP Test: Octet 300 > 255');
+                });
+            }
+
+            if (testBadMacBtn) {
+                testBadMacBtn.addEventListener('click', () => {
+                    this.setRegexInput('00:1E:67:98:2A:ZZ', 'Invalid MAC Test: Non-hex ZZ');
+                });
+            }
+        }
+
+        setRegexInput(val, label = '') {
+            const input = document.getElementById('regex-quick-input');
+            if (input) {
+                input.value = val;
+                this.runRegexCheck(val, label);
+            }
+        }
+
+        runRegexCheck(val, customLabel = '') {
+            const resultPill = document.getElementById('regex-quick-result');
+            const note = document.getElementById('regex-quick-note');
+
+            if (!resultPill) return;
+
+            if (!val) {
+                resultPill.innerText = 'Waiting for input...';
+                resultPill.className = 'regex-result-pill';
+                if (note) note.innerText = 'Type any IPv4 address (e.g. 192.168.1.100) or MAC address (e.g. 00:1A:2B:3C:4D:5E).';
+                return;
+            }
+
+            // 1. Check IPv4
+            if (RegexValidator.validateIpv4(val)) {
+                const ipCheck = RegexValidator.verifyIpAddress(val);
+                if (ipCheck.valid) {
+                    resultPill.className = 'regex-result-pill res-valid';
+                    resultPill.innerText = `✓ VALID IPv4 ADDRESS: ${val}`;
+                    if (note) {
+                        note.innerText = customLabel 
+                            ? `✓ ${customLabel}: Strict RFC 791 Regex Passed (4 octets, 0-255). Integer: ${ipCheck.integer}`
+                            : `✓ Strict RFC 791 Regex Passed: 4 decimal octets (0-255). Integer: ${ipCheck.integer}`;
+                    }
+                } else {
+                    resultPill.className = 'regex-result-pill res-invalid';
+                    resultPill.innerText = '✗ INVALID IPv4';
+                    if (note) note.innerText = ipCheck.error;
+                }
+                return;
+            }
+
+            // 2. Check MAC
+            if (RegexValidator.validateMac(val)) {
+                const macCheck = RegexValidator.verifyMacAddress(val);
+                if (macCheck.valid) {
+                    resultPill.className = 'regex-result-pill res-valid';
+                    resultPill.innerText = `✓ VALID MAC ADDRESS: ${macCheck.normalized}`;
+                    if (note) {
+                        note.innerText = customLabel 
+                            ? `✓ ${customLabel}: Strict IEEE 802 Regex Passed (6 pairs of hex digits).`
+                            : `✓ Strict IEEE 802 Regex Passed: 6 pairs of hex digits (48-bit hardware MAC).`;
+                    }
+                } else {
+                    resultPill.className = 'regex-result-pill res-invalid';
+                    resultPill.innerText = '✗ INVALID MAC';
+                    if (note) note.innerText = macCheck.error;
+                }
+                return;
+            }
+
+            // 3. Invalid format
+            resultPill.className = 'regex-result-pill res-invalid';
+            resultPill.innerText = '✗ INVALID FORMAT (REJECTED BY REGEX)';
+            if (note) {
+                note.innerText = customLabel 
+                    ? `✗ ${customLabel}: String failed regex pattern test (must be 0-255 octets or 6 hex pairs).`
+                    : '✗ String failed regular expression match: Expected valid IPv4 (0-255 octets) or MAC (6 hex pairs).';
+            }
+        }
+
+        bindSimulationListeners() {
+            this.sim.addListener((evt) => {
+                if (evt.type === 'SIM_TICK') {
+                    this.updateClock(evt.simTime);
+                    this.updateLeaseMeter();
+                    this.renderPoolHeatmap();
+                } else if (evt.type === 'PACKET_DISPATCHED') {
+                    this.renderMessageTimeline();
+                    this.updateCurrentDeviceView();
+                    this.renderPoolHeatmap();
+                } else if (evt.type === 'CLIENT_UPDATED') {
+                    this.updateCurrentDeviceView();
+                    this.bindDeviceTabs();
+                } else if (evt.type === 'LOG_ENTRY') {
+                    if (evt.entry && evt.entry.details && evt.entry.details.type === 'POOL_EXHAUSTION') {
+                        this.showAllocationError("Allocation Error: Address Pool Exhausted! No available IPs.");
+                    }
+                } else if (evt.type === 'SIM_RESET') {
+                    this.updateClock(0);
+                    this.bindDeviceTabs();
+                    this.updateCurrentDeviceView();
+                    this.renderPoolHeatmap();
+                    this.renderMessageTimeline();
+                }
+            });
+        }
+
+        updateClock(time) {
+            const clockEl = document.getElementById('sim-clock');
+            if (clockEl) {
+                const m = Math.floor(time / 60).toString().padStart(2, '0');
+                const s = (time % 60).toString().padStart(2, '0');
+                clockEl.innerText = `Clock: ${m}:${s}`;
+            }
+        }
+
+        updateCurrentDeviceView() {
+            const client = this.sim.getClient(this.selectedClientId);
+            if (!client) return;
+
+            // Name & MAC
+            const nameEl = document.getElementById('dev-name');
+            const macEl = document.getElementById('dev-mac');
+            const ipEl = document.getElementById('dev-ip');
+
+            if (nameEl) nameEl.innerText = client.hostname;
+            if (macEl) macEl.innerText = client.mac;
+
+            // IP display
+            if (ipEl) {
+                if (client.isBound()) {
+                    ipEl.innerText = client.ip;
+                    ipEl.className = 'ip-display-pill';
+
+                    // AUTO-SYNC REGEX VALIDATOR WITH ALLOCATED IP!
+                    if (!this.isUserManuallyEditingRegex) {
+                        this.setRegexInput(client.ip, `Live Allocated IP for ${client.hostname}`);
+                    }
+                } else {
+                    ipEl.innerText = '0.0.0.0 (Unassigned)';
+                    ipEl.className = 'ip-display-pill unassigned';
+
+                    // When not bound, sync with client's MAC address
+                    if (!this.isUserManuallyEditingRegex) {
+                        this.setRegexInput(client.mac, `Hardware MAC for ${client.hostname}`);
+                    }
+                }
+            }
+
+            // Update FSM banner and nodes
+            const state = client.getState();
+            const stateMeta = FSM_EXPLANATIONS[state] || FSM_EXPLANATIONS.INIT;
+
+            const badgeEl = document.getElementById('fsm-badge');
+            const explainEl = document.getElementById('fsm-explain');
+
+            if (badgeEl) {
+                badgeEl.innerText = state;
+                badgeEl.style.backgroundColor = stateMeta.color;
+                badgeEl.style.color = '#fff';
+            }
+
+            if (explainEl) {
+                explainEl.innerText = stateMeta.desc;
+            }
+
+            // Highlight step nodes in the pipeline
+            const stepMap = {
+                INIT: 'step-init',
+                SELECTING: 'step-discover',
+                REQUESTING: 'step-offer',
+                BOUND: 'step-bound',
+                RENEWING: 'step-renewing',
+                RELEASED: 'step-released',
+                EXPIRED: 'step-released',
+                DECLINED: 'step-conflict'
+            };
+
+            document.querySelectorAll('.fsm-step-node').forEach(node => {
+                node.classList.remove('is-active', 'is-bound', 'is-conflict');
+            });
+
+            const activeNodeId = stepMap[state] || 'step-init';
+            const activeNode = document.getElementById(activeNodeId);
+            if (activeNode) {
+                activeNode.classList.add('is-active');
+                if (state === 'BOUND') activeNode.classList.add('is-bound');
+                if (state === 'DECLINED') activeNode.classList.add('is-conflict');
+            }
+
+            this.updateLeaseMeter();
+        }
+
+        updateLeaseMeter() {
+            const client = this.sim.getClient(this.selectedClientId);
+            const fill = document.getElementById('dev-lease-fill');
+            const label = document.getElementById('dev-lease-label');
+
+            if (!client || !fill || !label) return;
+
+            const metrics = client.getLeaseMetrics(this.sim.simTime);
+            if (metrics.active) {
+                const remainingPct = 100 - metrics.progressPercent;
+                fill.style.width = `${remainingPct}%`;
+
+                if (metrics.isPastT2) fill.className = 'lease-fill rebinding';
+                else if (metrics.isPastT1) fill.className = 'lease-fill renewing';
+                else fill.className = 'lease-fill';
+
+                label.innerText = `${metrics.remainingSecs}s remaining (${metrics.progressPercent}% elapsed)`;
+            } else {
+                fill.style.width = '0%';
+                label.innerText = 'No active lease';
+            }
+        }
+
+        renderMessageTimeline() {
+            const container = document.getElementById('seq-feed-container');
+            if (!container) return;
+
+            const packets = this.sim.packetHistory.slice(0, 15);
+            if (packets.length === 0) {
+                container.innerHTML = `<div class="empty-hint">No messages yet. Click "Get IP (DORA)" to begin.</div>`;
+                return;
+            }
+
+            container.innerHTML = packets.map(p => {
+                let badgeClass = 'seq-badge-discover';
+                if (p.messageType === 2) badgeClass = 'seq-badge-offer';
+                else if (p.messageType === 3) badgeClass = 'seq-badge-request';
+                else if (p.messageType === 5) badgeClass = 'seq-badge-ack';
+                else if (p.messageType === 6) badgeClass = 'seq-badge-nak';
+                else if (p.messageType === 4) badgeClass = 'seq-badge-decline';
+                else if (p.messageType === 7) badgeClass = 'seq-badge-release';
+
+                return `
+                    <div class="seq-item">
+                        <span class="seq-item-badge ${badgeClass}">${p.getTypeName()}</span>
+                        <span class="seq-item-desc">${p.senderName} ➔ ${p.targetName}: <strong>${p.getSummary()}</strong></span>
+                        <span class="seq-item-time">T+${p.simTick}s</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        renderPoolHeatmap() {
+            const container = document.getElementById('pool-grid-container');
+            const counter = document.getElementById('pool-counter');
+            if (!container) return;
+
+            const entries = this.sim.server.getPoolEntries();
+            const stats = this.sim.server.updatePoolStatistics();
+
+            if (counter) {
+                counter.innerText = `${stats.active} Leased / ${stats.available} Available / ${stats.conflicted} Conflicted`;
+            }
+
+            container.innerHTML = entries.map(e => {
+                let statusClass = '';
+                if (e.status === 'BOUND') statusClass = 'active';
+                else if (e.status === 'CONFLICTED') statusClass = 'conflict';
+
+                const octet = e.ip.split('.')[3];
+                return `
+                    <div class="pool-dot ${statusClass}" title="${e.ip} (${e.status}) ${e.clientHost ? '- ' + e.clientHost : ''}">
+                        .${octet}
+                    </div>
+                `;
+            }).join('');
+        }
+    }
+
+    return SimpleUIController;
+}));
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    window.app = new SimpleUI();
+    window.app.init();
+});
+
+</script>
+</body>
+</html>
