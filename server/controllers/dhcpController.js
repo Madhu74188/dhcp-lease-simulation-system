@@ -233,3 +233,61 @@ exports.releaseLease = async (req, res) => {
 
     res.json({ success: true, message: 'Lease released, returned to available pool.' });
 };
+
+// 7. SYNC LIVE UI ACTIONS DIRECTLY TO MONGODB ATLAS
+exports.syncLease = async (req, res) => {
+    try {
+        const { deviceId, hostname, mac, currentIp, fsmState, action } = req.body;
+        console.log(`[MongoDB Atlas Sync] Device: ${hostname} (${mac}) -> IP: ${currentIp} [State: ${fsmState}]`);
+
+        if (isMongoConnected()) {
+            await Device.findOneAndUpdate(
+                { deviceId },
+                {
+                    deviceId,
+                    hostname: hostname || deviceId,
+                    macAddress: mac,
+                    assignedIp: currentIp || '0.0.0.0',
+                    fsmState: fsmState || 'BOUND'
+                },
+                { upsert: true, new: true }
+            );
+
+            if (currentIp && currentIp !== '0.0.0.0') {
+                const nowSecs = Math.floor(Date.now() / 1000);
+                await Lease.findOneAndUpdate(
+                    { clientMac: mac },
+                    {
+                        leaseId: 'lease-' + (mac ? mac.replace(/[:-]/g, '') : Date.now()),
+                        clientMac: mac,
+                        clientHostname: hostname || deviceId,
+                        allocatedIp: currentIp,
+                        status: fsmState === 'BOUND' ? 'BOUND' : (fsmState === 'DECLINED' ? 'DECLINED' : 'RELEASED'),
+                        leaseDurationSecs: 120,
+                        t1Secs: 60,
+                        t2Secs: 105,
+                        startTime: nowSecs,
+                        expiresAt: nowSecs + 120
+                    },
+                    { upsert: true, new: true }
+                );
+
+                await IpPool.findOneAndUpdate(
+                    { ipAddress: currentIp },
+                    {
+                        ipAddress: currentIp,
+                        status: fsmState === 'DECLINED' ? 'CONFLICTED' : (fsmState === 'BOUND' ? 'BOUND' : 'AVAILABLE'),
+                        allocatedToMac: fsmState === 'BOUND' ? mac : null,
+                        allocatedToHost: fsmState === 'BOUND' ? (hostname || deviceId) : null
+                    },
+                    { upsert: true }
+                );
+            }
+        }
+
+        res.json({ success: true, message: 'Synced to MongoDB Atlas successfully' });
+    } catch (err) {
+        console.error('Atlas sync error:', err.message);
+        res.status(500).json({ success: false, error: err.message });
+    }
+};

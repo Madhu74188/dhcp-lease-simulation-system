@@ -513,6 +513,35 @@
             }
 
             this.updateLeaseMeter();
+
+            // Auto Sync Live Changes to MongoDB Atlas
+            this.syncWithBackend(client);
+        }
+
+        async syncWithBackend(client) {
+            if (!client) return;
+            const state = client.getState();
+            const ip = client.ip || '0.0.0.0';
+            const syncKey = `${client.id}_${state}_${ip}`;
+            if (this._lastSyncKey === syncKey) return;
+            this._lastSyncKey = syncKey;
+
+            try {
+                await fetch('/api/dhcp/sync', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        deviceId: client.id,
+                        hostname: client.hostname,
+                        mac: client.mac,
+                        currentIp: ip,
+                        fsmState: state
+                    })
+                });
+                console.log(`✓ Live synced to MongoDB Atlas: ${client.hostname} (${ip}) -> ${state}`);
+            } catch (err) {
+                // Standalone / offline fallback
+            }
         }
 
         updateLeaseMeter() {

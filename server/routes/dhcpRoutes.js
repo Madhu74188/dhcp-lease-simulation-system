@@ -17,6 +17,7 @@ router.get('/pool', dhcpController.getIpPool);
 router.post('/dora', dhcpController.triggerDora);
 router.post('/conflict', dhcpController.triggerConflict);
 router.post('/release', dhcpController.releaseLease);
+router.post('/sync', dhcpController.syncLease);
 
 // Automata & Transition Table
 router.get('/automata', automataController.getAutomataDetails);

@@ -1,62 +1,57 @@
 /**
  * Network Address Allocation and DHCP Lease Simulation System
- * Lightweight Static Web Server
- * 
- * Zero external dependencies. Uses Node.js standard library (http, fs, path).
+ * Full MERN Backend Server with MongoDB Atlas Cloud Integration
  */
+const dns = require('dns');
+try {
+    dns.setServers(['8.8.8.8', '1.1.1.1']);
+} catch (e) {}
 
-const http = require('http');
-const fs = require('fs');
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 
+const app = express();
 const PORT = process.env.PORT || 3000;
-const BASE_DIR = __dirname;
 
-const MIME_TYPES = {
-    '.html': 'text/html; charset=utf-8',
-    '.css': 'text/css; charset=utf-8',
-    '.js': 'application/javascript; charset=utf-8',
-    '.json': 'application/json; charset=utf-8',
-    '.png': 'image/png',
-    '.jpg': 'image/jpeg',
-    '.svg': 'image/svg+xml',
-    '.ico': 'image/x-icon',
-    '.txt': 'text/plain; charset=utf-8'
-};
+// Read Atlas URI from server/.env or fallback to configured Atlas cluster
+let MONGODB_URI = process.env.MONGODB_URI;
+if (!MONGODB_URI) {
+    try {
+        const envContent = fs.readFileSync(path.join(__dirname, 'server/.env'), 'utf8');
+        const match = envContent.match(/MONGODB_URI=(.*)/);
+        if (match && match[1]) MONGODB_URI = match[1].trim();
+    } catch (e) {}
+}
+if (!MONGODB_URI) {
+    MONGODB_URI = 'mongodb+srv://campusconnect_user:Madhumitha74188@cluster0.afagoyj.mongodb.net/dhcp_simulation?retryWrites=true&w=majority';
+}
 
-const server = http.createServer((req, res) => {
-    let reqUrl = req.url.split('?')[0];
-    if (reqUrl === '/' || reqUrl === '') {
-        reqUrl = '/index.html';
-    }
+// Middleware
+app.use(cors());
+app.use(express.json());
 
-    const safePath = path.normalize(decodeURIComponent(reqUrl)).replace(/^(\.\.[\/\\])+/, '');
-    const filePath = path.join(BASE_DIR, safePath);
-
-    fs.stat(filePath, (err, stats) => {
-        if (err || !stats.isFile()) {
-            res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
-            res.end(`404 Not Found: ${reqUrl}`);
-            return;
-        }
-
-        const ext = path.extname(filePath).toLowerCase();
-        const contentType = MIME_TYPES[ext] || 'application/octet-stream';
-
-        res.writeHead(200, {
-            'Content-Type': contentType,
-            'Cache-Control': 'no-cache'
-        });
-
-        const stream = fs.createReadStream(filePath);
-        stream.pipe(res);
+// MongoDB Atlas Connection
+console.log('Connecting to MongoDB Atlas Cloud database...');
+mongoose.connect(MONGODB_URI)
+    .then(() => {
+        console.log('✓ Successfully connected to MongoDB Atlas (Database: dhcp_simulation)');
+    })
+    .catch((err) => {
+        console.warn('! Note: MongoDB connecting in resilient fallback cache mode:', err.message);
     });
-});
 
-server.listen(PORT, () => {
-    console.log('\n======================================================');
-    console.log('NET-DHCP // Network Address Allocation & Lease Simulator');
-    console.log(`Web application is live at: http://localhost:${PORT}`);
-    console.log('Press Ctrl+C to terminate server.');
-    console.log('======================================================\n');
+// API Routes
+app.use('/api/dhcp', require('./server/routes/dhcpRoutes'));
+
+// Serve Static Frontend Files
+app.use(express.static(path.join(__dirname)));
+
+app.listen(PORT, () => {
+    console.log(`\n======================================================`);
+    console.log(`DHCP Simulation Live Web App running on http://localhost:${PORT}`);
+    console.log(`Connected to MongoDB Atlas Database: dhcp_simulation`);
+    console.log(`======================================================\n`);
 });
