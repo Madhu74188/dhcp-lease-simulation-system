@@ -2,14 +2,31 @@
  * Express.js & MongoDB Server for DHCP Lease Simulation System
  * MERN Stack Architecture
  */
+const dns = require('dns');
+try {
+    dns.setServers(['8.8.8.8', '1.1.1.1']);
+} catch (e) {}
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/dhcp_simulation';
+
+let MONGODB_URI = process.env.MONGODB_URI;
+if (!MONGODB_URI) {
+    try {
+        const envContent = fs.readFileSync(path.join(__dirname, '.env'), 'utf8');
+        const match = envContent.match(/MONGODB_URI=(.*)/);
+        if (match && match[1]) MONGODB_URI = match[1].trim();
+    } catch (e) {}
+}
+if (!MONGODB_URI) {
+    MONGODB_URI = 'mongodb+srv://campusconnect_user:Madhumitha74188@cluster0.afagoyj.mongodb.net/dhcp_simulation?retryWrites=true&w=majority';
+}
 
 // Middleware
 app.use(cors());
